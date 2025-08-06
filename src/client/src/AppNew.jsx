@@ -3,8 +3,9 @@ import Navigation from './components/Navigation';
 import DashboardAvancado from './components/DashboardAvancado';
 import DeliveryListImproved from './components/DeliveryListImproved';
 import PedidoManager from './components/PedidoManager';
-import ZonasExclusao from './pages/ZonasExclusao';
+import ZonasExclusao from './components/ZonasExclusao';
 import Estatisticas from './components/Estatisticas';
+import MapaEntregas from './components/MapaEntregasNew';
 import './AppNew.css';
 
 export default function AppNew() {
@@ -18,6 +19,8 @@ export default function AppNew() {
         return <PedidoManager />;
       case 'zonas':
         return <ZonasExclusao />;
+      case 'mapa':
+        return <MapaEntregas />;
       case 'estatisticas':
         return <Estatisticas />;
       default:
@@ -38,3 +41,4 @@ export default function AppNew() {
     </div>
   );
 }
+

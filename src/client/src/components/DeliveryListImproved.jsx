@@ -40,7 +40,7 @@ export default function DeliveryList() {
 
   const fetchDrones = async () => {
     try {
-      const response = await api.get('/api/drones');
+      const response = await api.get('/drones');
       setDrones(response.data);
     } catch (error) {
       console.error('Erro ao buscar drones:', error);
@@ -51,7 +51,7 @@ export default function DeliveryList() {
 
   const verificarTempoReal = async () => {
     try {
-      const response = await api.get('/api/tempo-real/status');
+      const response = await api.get('/tempo-real/status');
       setTempoRealAtivo(response.data.ativo);
     } catch (error) {
       console.error('Erro ao verificar tempo real:', error);
@@ -61,11 +61,11 @@ export default function DeliveryList() {
   const alternarTempoReal = async () => {
     try {
       if (tempoRealAtivo) {
-        await api.post('/api/tempo-real/parar');
+        await api.post('/tempo-real/parar');
         setTempoRealAtivo(false);
         adicionarLog('warning', 'Simulação em tempo real pausada');
       } else {
-        await api.post('/api/tempo-real/iniciar');
+        await api.post('/tempo-real/iniciar');
         setTempoRealAtivo(true);
         adicionarLog('success', 'Simulação em tempo real iniciada');
       }
@@ -78,7 +78,7 @@ export default function DeliveryList() {
   const simularEntrega = async () => {
     setSimulating(true);
     try {
-      await api.post('/api/drones/simular');
+      await api.post('/drones/simular');
       await fetchDrones();
       adicionarLog('success', 'Simulação de entrega executada com sucesso');
     } catch (error) {
@@ -90,7 +90,7 @@ export default function DeliveryList() {
 
   const recarregarTodos = async () => {
     try {
-      await api.post('/api/drones/recarregar-todos');
+      await api.post('/drones/recarregar-todos');
       await fetchDrones();
       adicionarLog('success', 'Todos os drones foram recarregados');
     } catch (error) {
@@ -302,3 +302,5 @@ export default function DeliveryList() {
     </div>
   );
 }
+
+

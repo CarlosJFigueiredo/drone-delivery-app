@@ -40,9 +40,9 @@ export default function DashboardAvancado() {
   const carregarDados = async () => {
     try {
       const [statsRes, dronesRes, entregasRes] = await Promise.all([
-        api.get('/api/pedidos/estatisticas'),
-        api.get('/api/drones'),
-        api.get('/api/pedidos/entregas')
+        api.get('/pedidos/estatisticas'),
+        api.get('/drones'),
+        api.get('/pedidos/entregas')
       ]);
       
       setEstatisticas(statsRes.data);
@@ -60,7 +60,7 @@ export default function DashboardAvancado() {
 
   const verificarTempoReal = async () => {
     try {
-      const response = await api.get('/api/tempo-real/status');
+      const response = await api.get('/tempo-real/status');
       setTempoRealAtivo(response.data.ativo);
     } catch (error) {
       console.error('Erro ao verificar tempo real:', error);
@@ -70,10 +70,10 @@ export default function DashboardAvancado() {
   const alternarTempoReal = async () => {
     try {
       if (tempoRealAtivo) {
-        await api.post('/api/tempo-real/parar');
+        await api.post('/tempo-real/parar');
         setTempoRealAtivo(false);
       } else {
-        await api.post('/api/tempo-real/iniciar');
+        await api.post('/tempo-real/iniciar');
         setTempoRealAtivo(true);
       }
     } catch (error) {
@@ -107,7 +107,7 @@ export default function DashboardAvancado() {
 
   const simularEventos = async () => {
     try {
-      await api.post('/api/tempo-real/eventos');
+      await api.post('/tempo-real/eventos');
       await carregarDados();
     } catch (error) {
       console.error('Erro ao simular eventos:', error);
@@ -320,3 +320,5 @@ export default function DashboardAvancado() {
     </div>
   );
 }
+
+

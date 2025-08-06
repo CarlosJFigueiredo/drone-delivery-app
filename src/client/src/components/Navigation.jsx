@@ -4,6 +4,7 @@ import {
   FaRobot, 
   FaBox, 
   FaMapMarkerAlt,
+  FaMap,
   FaChartBar
 } from 'react-icons/fa';
 import './Navigation.css';
@@ -21,6 +22,12 @@ export default function Navigation({ activeSection, setActiveSection }) {
       label: 'Gerenciar Pedidos/Drones',
       icon: FaBox,
       description: 'Entregas e cadastro de drones'
+    },
+    {
+      id: 'mapa',
+      label: 'Mapa das Entregas',
+      icon: FaMap,
+      description: 'Visualização em tempo real'
     },
     {
       id: 'zonas',
@@ -66,3 +73,4 @@ export default function Navigation({ activeSection, setActiveSection }) {
     </nav>
   );
 }
+

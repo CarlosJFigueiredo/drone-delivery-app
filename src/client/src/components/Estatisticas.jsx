@@ -16,7 +16,7 @@ export default function Estatisticas() {
   const fetchEstatisticas = async () => {
     try {
       setError(null);
-      const response = await api.get('/api/pedidos/estatisticas');
+      const response = await api.get('/pedidos/estatisticas');
       setStats(response.data);
     } catch (error) {
       console.error('Erro ao buscar estatísticas:', error);
@@ -182,3 +182,5 @@ export default function Estatisticas() {
     </div>
   );
 }
+
+

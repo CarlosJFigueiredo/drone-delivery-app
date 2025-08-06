@@ -42,10 +42,7 @@ public class DroneService {
     }
 
     private void inicializarZonasExclusao() {
-        // Zonas longe dos pontos de teste para não interferir
-        zonasExclusao.add(new ZonaExclusao(-100, -100, -90, -90, "Aeroporto Central", "Zona de tráfego aéreo intenso"));
-        zonasExclusao.add(new ZonaExclusao(500, 500, 700, 700, "Base Militar", "Área militar restrita"));
-        zonasExclusao.add(new ZonaExclusao(-500, 1000, -300, 1200, "Hospital Principal", "Área hospitalar - sem ruído"));
+        // Nenhuma zona padrão - usuário pode criar suas próprias zonas via interface
     }
 
     public void cadastrarDrone(String id, double capacidade, double autonomia) {

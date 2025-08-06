@@ -233,6 +233,6 @@ class DroneServiceTest {
         droneService.adicionarZonaExclusao(10, 10, 20, 20, "Teste", "Área de teste");
 
         // Then
-        assertEquals(4, droneService.getZonasExclusao().size()); // 3 padrão + 1 nova
+        assertEquals(1, droneService.getZonasExclusao().size()); // 0 padrão + 1 nova
     }
 }

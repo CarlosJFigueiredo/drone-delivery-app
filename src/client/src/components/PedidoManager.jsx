@@ -56,7 +56,7 @@ export default function PedidoManager() {
     setLoading(true);
     try {
       console.log('🔄 Carregando pedidos...');
-      const response = await api.get('/api/pedidos/fila');
+      const response = await api.get('/pedidos/fila');
       console.log('✅ Pedidos carregados:', response.data);
       setPedidos(response.data || []);
     } catch (error) {
@@ -73,7 +73,7 @@ export default function PedidoManager() {
     setLoading(true);
     try {
       console.log('🔄 Carregando drones...');
-      const response = await api.get('/api/drones');
+      const response = await api.get('/drones');
       console.log('✅ Drones carregados:', response.data);
       setDrones(response.data || []);
     } catch (error) {
@@ -124,7 +124,7 @@ export default function PedidoManager() {
         console.log('✅ Pedido atualizado:', response.data);
       } else {
         console.log('➕ Criando novo pedido...');
-        response = await api.post('/api/pedidos', pedidoData);
+        response = await api.post('/pedidos', pedidoData);
         console.log('✅ Pedido criado:', response.data);
       }
       
@@ -189,7 +189,7 @@ export default function PedidoManager() {
         console.log('✅ Drone atualizado:', response.data);
       } else {
         console.log('➕ Criando novo drone...');
-        response = await api.post('/api/drones', droneData);
+        response = await api.post('/drones', droneData);
         console.log('✅ Drone criado:', response.data);
       }
       
@@ -701,3 +701,5 @@ export default function PedidoManager() {
     </div>
   );
 }
+
+

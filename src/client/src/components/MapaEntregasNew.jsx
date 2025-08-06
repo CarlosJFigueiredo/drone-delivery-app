@@ -17,10 +17,10 @@ export default function MapaEntregas() {
   const carregarDados = async () => {
     try {
       const [dronesRes, entregasRes, zonasRes, pedidosRes] = await Promise.all([
-        api.get('/api/drones'),
-        api.get('/api/pedidos/entregas'),
-        api.get('/api/drones/zonas-exclusao'),
-        api.get('/api/pedidos/fila')
+        api.get('/drones'),
+        api.get('/pedidos/entregas'),
+        api.get('/drones/zonas-exclusao'),
+        api.get('/pedidos/fila')
       ]);
 
       setDrones(dronesRes.data);
@@ -271,3 +271,4 @@ export default function MapaEntregas() {
     </div>
   );
 }
+
