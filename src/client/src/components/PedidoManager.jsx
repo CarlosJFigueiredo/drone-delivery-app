@@ -52,6 +52,13 @@ export default function PedidoManager() {
     carregarDrones();
   }, []);
 
+  // Limpar pesquisa e filtros quando mudar de aba
+  useEffect(() => {
+    setSearchTerm('');
+    setFilterStatus('TODOS');
+    setSortBy(activeTab === 'pedidos' ? 'data' : 'id');
+  }, [activeTab]);
+
   const carregarPedidos = async () => {
     setLoading(true);
     try {
@@ -326,6 +333,37 @@ export default function PedidoManager() {
       }
     });
 
+  const filteredAndSortedDrones = drones
+    .filter(drone => {
+      const matchesSearch = drone.id && drone.id.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesFilter = filterStatus === 'TODOS' || drone.estado === filterStatus || (!drone.estado && filterStatus === 'IDLE');
+      return matchesSearch && matchesFilter;
+    })
+    .sort((a, b) => {
+      let aValue = a[sortBy];
+      let bValue = b[sortBy];
+      
+      if (sortBy === 'id') {
+        aValue = a.id || '';
+        bValue = b.id || '';
+      } else if (sortBy === 'capacidade') {
+        aValue = parseFloat(a.capacidadeMaxima || a.capacidade) || 0;
+        bValue = parseFloat(b.capacidadeMaxima || b.capacidade) || 0;
+      } else if (sortBy === 'bateria') {
+        aValue = parseFloat(a.bateriaAtual) || 100;
+        bValue = parseFloat(b.bateriaAtual) || 100;
+      } else if (sortBy === 'estado') {
+        aValue = a.estado || 'IDLE';
+        bValue = b.estado || 'IDLE';
+      }
+      
+      if (sortOrder === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
+
   const getStatusIcon = (status) => {
     switch (status) {
       case 'PENDENTE':
@@ -386,7 +424,7 @@ export default function PedidoManager() {
           <FaSearch className="search-icon" />
           <input
             type="text"
-            placeholder="Buscar por cliente..."
+            placeholder={activeTab === 'pedidos' ? "Buscar por cliente..." : "Buscar por ID do drone..."}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
@@ -400,11 +438,24 @@ export default function PedidoManager() {
             onChange={(e) => setFilterStatus(e.target.value)}
             className="filter-select"
           >
-            <option value="TODOS">Todos os Status</option>
-            <option value="PENDENTE">Pendente</option>
-            <option value="EM_PREPARO">Em Preparo</option>
-            <option value="ENTREGUE">Entregue</option>
-            <option value="CANCELADO">Cancelado</option>
+            <option value="TODOS">
+              {activeTab === 'pedidos' ? 'Todos os Status' : 'Todos os Estados'}
+            </option>
+            {activeTab === 'pedidos' ? (
+              <>
+                <option value="PENDENTE">Pendente</option>
+                <option value="EM_PREPARO">Em Preparo</option>
+                <option value="ENTREGUE">Entregue</option>
+                <option value="CANCELADO">Cancelado</option>
+              </>
+            ) : (
+              <>
+                <option value="IDLE">Disponível</option>
+                <option value="BUSY">Ocupado</option>
+                <option value="CHARGING">Carregando</option>
+                <option value="MAINTENANCE">Manutenção</option>
+              </>
+            )}
           </select>
         </div>
 
@@ -414,10 +465,21 @@ export default function PedidoManager() {
             onChange={(e) => setSortBy(e.target.value)}
             className="sort-select"
           >
-            <option value="data">Data</option>
-            <option value="prioridade">Prioridade</option>
-            <option value="peso">Peso</option>
-            <option value="cliente">Cliente</option>
+            {activeTab === 'pedidos' ? (
+              <>
+                <option value="data">Data</option>
+                <option value="prioridade">Prioridade</option>
+                <option value="peso">Peso</option>
+                <option value="cliente">Cliente</option>
+              </>
+            ) : (
+              <>
+                <option value="id">ID</option>
+                <option value="capacidade">Capacidade</option>
+                <option value="bateria">Bateria</option>
+                <option value="estado">Estado</option>
+              </>
+            )}
           </select>
           <button
             className="sort-btn"
@@ -437,124 +499,148 @@ export default function PedidoManager() {
 
       {activeTab === 'pedidos' && (
         <div className="pedidos-grid">
-          {filteredAndSortedPedidos.map(pedido => (
-            <div key={pedido.id} className={`pedido-card ${getPrioridadeClass(pedido.prioridade)}`}>
-              <div className="pedido-header">
-                <div className="pedido-info">
-                  <h3 className="pedido-id">#{pedido.id}</h3>
-                  <div className="pedido-status">
-                    {getStatusIcon(pedido.status)}
-                    <span>{pedido.status}</span>
+          {filteredAndSortedPedidos.length > 0 ? (
+            filteredAndSortedPedidos.map(pedido => (
+              <div key={pedido.id} className={`pedido-card ${getPrioridadeClass(pedido.prioridade)}`}>
+                <div className="pedido-header">
+                  <div className="pedido-info">
+                    <h3 className="pedido-id">#{pedido.id}</h3>
+                    <div className="pedido-status">
+                      {getStatusIcon(pedido.status)}
+                      <span>{pedido.status}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="pedido-actions">
+                    <button
+                      className="action-btn edit"
+                      onClick={() => handleEdit(pedido)}
+                      title="Editar"
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="action-btn delete"
+                      onClick={() => handleDelete(pedido.id)}
+                      title="Excluir"
+                    >
+                      <FaTrash />
+                    </button>
                   </div>
                 </div>
-                
-                <div className="pedido-actions">
-                  <button
-                    className="action-btn edit"
-                    onClick={() => handleEdit(pedido)}
-                    title="Editar"
-                  >
-                    <FaEdit />
-                  </button>
-                  <button
-                    className="action-btn delete"
-                    onClick={() => handleDelete(pedido.id)}
-                    title="Excluir"
-                  >
-                    <FaTrash />
-                  </button>
-                </div>
-              </div>
 
-              <div className="pedido-content">
-                <div className="pedido-detail">
-                  <FaUser className="detail-icon" />
-                  <span className="detail-label">Cliente:</span>
-                  <span className="detail-value">{pedido.cliente}</span>
-                </div>
+                <div className="pedido-content">
+                  <div className="pedido-detail">
+                    <FaUser className="detail-icon" />
+                    <span className="detail-label">Cliente:</span>
+                    <span className="detail-value">{pedido.cliente}</span>
+                  </div>
 
-                <div className="pedido-detail">
-                  <FaMapMarkerAlt className="detail-icon" />
-                  <span className="detail-label">Destino:</span>
-                  <span className="detail-value">({pedido.x}, {pedido.y})</span>
+                  <div className="pedido-detail">
+                    <FaMapMarkerAlt className="detail-icon" />
+                    <span className="detail-label">Destino:</span>
+                    <span className="detail-value">({pedido.x}, {pedido.y})</span>
+                  </div>
+
+                  <div className="pedido-detail">
+                    <FaWeight className="detail-icon" />
+                    <span className="detail-label">Peso:</span>
+                    <span className="detail-value">{pedido.peso}kg</span>
+                  </div>
+
+                  <div className="pedido-detail">
+                    <span className="detail-label">Prioridade:</span>
+                    <span className={`priority-badge ${getPrioridadeClass(pedido.prioridade)}`}>
+                      {pedido.prioridade}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="pedido-detail">
-                  <FaWeight className="detail-icon" />
-                  <span className="detail-label">Peso:</span>
-                  <span className="detail-value">{pedido.peso}kg</span>
-                </div>
-
-                <div className="pedido-detail">
-                  <span className="detail-label">Prioridade:</span>
-                  <span className={`priority-badge ${getPrioridadeClass(pedido.prioridade)}`}>
-                    {pedido.prioridade}
+                <div className="pedido-footer">
+                  <span className="pedido-date">
+                    <FaClock /> {new Date(pedido.dataCreacao).toLocaleDateString('pt-BR')}
                   </span>
                 </div>
               </div>
-
-              <div className="pedido-footer">
-                <span className="pedido-date">
-                  <FaClock /> {new Date(pedido.dataCreacao).toLocaleDateString('pt-BR')}
-                </span>
-              </div>
+            ))
+          ) : (
+            <div className="no-data">
+              <FaBox />
+              <span>
+                {searchTerm || filterStatus !== 'TODOS' 
+                  ? 'Nenhum pedido encontrado com os filtros aplicados' 
+                  : 'Nenhum pedido cadastrado ainda'
+                }
+              </span>
             </div>
-          ))}
+          )}
         </div>
       )}
 
       {activeTab === 'drones' && (
         <div className="drones-grid">
-          {drones.map(drone => (
-            <div key={drone.id} className="drone-card">
-              <div className="drone-header">
-                <div className="drone-info">
-                  <h3 className="drone-id">{drone.id}</h3>
-                  <div className="drone-status">
-                    <FaRobot className="status-icon" />
-                    <span>{drone.status || 'IDLE'}</span>
+          {filteredAndSortedDrones.length > 0 ? (
+            filteredAndSortedDrones.map(drone => (
+              <div key={drone.id} className="drone-card">
+                <div className="drone-header">
+                  <div className="drone-info">
+                    <h3 className="drone-id">{drone.id}</h3>
+                    <div className="drone-status">
+                      <FaRobot className="status-icon" />
+                      <span>{drone.estado || drone.status || 'IDLE'}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="drone-actions">
+                    <button
+                      className="action-btn edit"
+                      onClick={() => handleDroneEdit(drone)}
+                      title="Editar"
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="action-btn delete"
+                      onClick={() => handleDroneDelete(drone.id)}
+                      title="Excluir"
+                    >
+                      <FaTrash />
+                    </button>
                   </div>
                 </div>
-                
-                <div className="drone-actions">
-                  <button
-                    className="action-btn edit"
-                    onClick={() => handleDroneEdit(drone)}
-                    title="Editar"
-                  >
-                    <FaEdit />
-                  </button>
-                  <button
-                    className="action-btn delete"
-                    onClick={() => handleDroneDelete(drone.id)}
-                    title="Excluir"
-                  >
-                    <FaTrash />
-                  </button>
+
+                <div className="drone-content">
+                  <div className="drone-detail">
+                    <FaWeight className="detail-icon" />
+                    <span className="detail-label">Capacidade:</span>
+                    <span className="detail-value">{drone.capacidadeMaxima || drone.capacidade}kg</span>
+                  </div>
+
+                  <div className="drone-detail">
+                    <FaBatteryFull className="detail-icon" />
+                    <span className="detail-label">Bateria:</span>
+                    <span className="detail-value">{Math.round(drone.bateriaAtual || 100)}%</span>
+                  </div>
+
+                  <div className="drone-detail">
+                    <FaMapMarkerAlt className="detail-icon" />
+                    <span className="detail-label">Posição:</span>
+                    <span className="detail-value">({drone.posX || drone.x || 0}, {drone.posY || drone.y || 0})</span>
+                  </div>
                 </div>
               </div>
-
-              <div className="drone-content">
-                <div className="drone-detail">
-                  <FaWeight className="detail-icon" />
-                  <span className="detail-label">Capacidade:</span>
-                  <span className="detail-value">{drone.capacidade}kg</span>
-                </div>
-
-                <div className="drone-detail">
-                  <FaBatteryFull className="detail-icon" />
-                  <span className="detail-label">Autonomia:</span>
-                  <span className="detail-value">{drone.autonomia}km</span>
-                </div>
-
-                <div className="drone-detail">
-                  <FaMapMarkerAlt className="detail-icon" />
-                  <span className="detail-label">Posição:</span>
-                  <span className="detail-value">({drone.x || 0}, {drone.y || 0})</span>
-                </div>
-              </div>
+            ))
+          ) : (
+            <div className="no-data">
+              <FaRobot />
+              <span>
+                {searchTerm || filterStatus !== 'TODOS' 
+                  ? 'Nenhum drone encontrado com os filtros aplicados' 
+                  : 'Nenhum drone cadastrado ainda'
+                }
+              </span>
             </div>
-          ))}
+          )}
         </div>
       )}
 

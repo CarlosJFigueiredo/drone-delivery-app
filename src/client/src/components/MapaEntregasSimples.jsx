@@ -7,10 +7,6 @@ export default function MapaEntregas() {
   const [zonasExclusao, setZonasExclusao] = useState([]);
   const [pedidosPendentes, setPedidosPendentes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [zoomLevel, setZoomLevel] = useState(1);
-  const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [lastMousePos, setLastMousePos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     carregarDados();

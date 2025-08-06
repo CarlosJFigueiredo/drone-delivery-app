@@ -14,6 +14,8 @@ public class Drone {
     private int posY;
     private EstadoDrone estado;
     private List<Pedido> pedidosAlocados = new ArrayList<>();
+    private long tempoInicioRecarga = 0; // Timestamp do início da recarga
+    private boolean emRecarga = false;
 
     public Drone(String id, double capacidadeMaxima, double autonomiaMaxima) {
         this.id = id;
@@ -80,5 +82,62 @@ public class Drone {
 
     public void adicionarPedido(Pedido pedido) {
         pedidosAlocados.add(pedido);
+    }
+    
+    /**
+     * Inicia processo de recarga de emergência
+     */
+    public void iniciarRecarga() {
+        this.emRecarga = true;
+        this.tempoInicioRecarga = System.currentTimeMillis();
+        this.estado = EstadoDrone.CHARGING;
+    }
+    
+    /**
+     * Finaliza processo de recarga
+     */
+    public void finalizarRecarga() {
+        this.emRecarga = false;
+        this.tempoInicioRecarga = 0;
+        this.bateriaAtual = 100.0; // Recarga completa
+        this.estado = EstadoDrone.IDLE;
+    }
+    
+    /**
+     * Verifica se está em processo de recarga
+     */
+    public boolean isEmRecarga() {
+        return emRecarga;
+    }
+    
+    /**
+     * Obtém tempo decorrido de recarga em minutos
+     */
+    public long getTempoRecargaMinutos() {
+        if (!emRecarga) return 0;
+        return (System.currentTimeMillis() - tempoInicioRecarga) / 60000;
+    }
+    
+    /**
+     * Simula recarga parcial baseada no tempo
+     */
+    public void atualizarRecarga(double taxaRecargaPorMinuto) {
+        if (emRecarga && bateriaAtual < 100.0) {
+            long minutosDecorridos = getTempoRecargaMinutos();
+            this.bateriaAtual = Math.min(100.0, bateriaAtual + (taxaRecargaPorMinuto * minutosDecorridos));
+            
+            // Se recarga completa, finalizar automaticamente
+            if (bateriaAtual >= 100.0) {
+                finalizarRecarga();
+            }
+        }
+    }
+    
+    /**
+     * Força retorno de emergência à base
+     */
+    public void retornoEmergencia() {
+        limparPedidos(); // Cancelar pedidos atuais
+        this.estado = EstadoDrone.RETORNANDO;
     }
 }

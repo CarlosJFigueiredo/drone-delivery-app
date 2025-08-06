@@ -65,4 +65,36 @@ public class SimuladorBateria {
         double consumoPorKm = calcularConsumoReal(1.0, peso, false);
         return bateriaAtual / consumoPorKm;
     }
+    
+    /**
+     * Verifica se a bateria está criticamente baixa
+     */
+    public boolean isBateriaCritica(double bateriaAtual) {
+        return bateriaAtual <= 10.0; // 10% ou menos é crítico
+    }
+    
+    /**
+     * Verifica se a bateria está baixa
+     */
+    public boolean isBateriaBaixa(double bateriaAtual) {
+        return bateriaAtual <= 20.0; // 20% ou menos é bateria baixa
+    }
+    
+    /**
+     * Calcula se há bateria suficiente para retornar à base
+     */
+    public boolean bateriaSuficienteParaRetorno(double bateriaAtual, double distanciaBase) {
+        double consumoRetorno = calcularConsumoReal(distanciaBase, 0, true); // Condições adversas
+        double margem = 5.0; // 5% de margem de segurança
+        return (bateriaAtual - consumoRetorno) >= margem;
+    }
+    
+    /**
+     * Simula processo de recarga da bateria
+     */
+    public double simularRecarga(double bateriaAtual, double tempoMinutos) {
+        double taxaRecarga = 1.5; // 1.5% por minuto
+        double novoNivel = Math.min(100.0, bateriaAtual + (taxaRecarga * tempoMinutos));
+        return novoNivel;
+    }
 }

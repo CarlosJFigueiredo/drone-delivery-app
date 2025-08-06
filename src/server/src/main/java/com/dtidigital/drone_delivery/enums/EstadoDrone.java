@@ -5,5 +5,7 @@ public enum EstadoDrone {
     CARREGANDO,
     EM_VOO,
     ENTREGANDO,
-    RETORNANDO
+    RETORNANDO,
+    CHARGING, // Estado específico para recarga de bateria
+    MAINTENANCE // Estado para manutenção (opcional)
 }

@@ -25,6 +25,8 @@ public class DroneService {
     // Configurações do sistema
     private static final double VELOCIDADE_DRONE_KM_H = 30.0; // 30 km/h
     private static final double BATERIA_MINIMA_RETORNO = 5.0; // 5% da bateria para retorno seguro
+    private static final double BATERIA_CRITICA = 10.0; // 10% é considerado crítico
+    private static final double BATERIA_BAIXA = 20.0; // 20% é considerado baixo
 
     @Autowired
     public DroneService(SimuladorBateria simuladorBateria, OtimizadorEntregas otimizadorEntregas) {
@@ -66,6 +68,9 @@ public class DroneService {
     }
 
     public void simularEntrega() {
+        // Primeiro, verificar e gerenciar drones com bateria baixa
+        gerenciarBateriaBaixa();
+        
         if (filaDePedidos.isEmpty()) {
             return;
         }
@@ -85,10 +90,13 @@ public class DroneService {
             if (drone.getEstado() == EstadoDrone.IDLE && index < alocacoesOtimizadas.size()) {
                 List<Pedido> pedidosParaDrone = alocacoesOtimizadas.get(index);
                 if (!pedidosParaDrone.isEmpty()) {
-                    // Remover pedidos alocados da fila
-                    filaDePedidos.removeAll(pedidosParaDrone);
-                    // Executar entregas com simulação avançada
-                    executarEntregasAvancadas(drone, pedidosParaDrone);
+                    // Verificar se drone tem bateria suficiente antes de alocar
+                    if (verificarBateriaSuficienteParaMissao(drone, pedidosParaDrone)) {
+                        // Remover pedidos alocados da fila
+                        filaDePedidos.removeAll(pedidosParaDrone);
+                        // Executar entregas com simulação avançada
+                        executarEntregasAvancadas(drone, pedidosParaDrone);
+                    }
                 }
                 index++;
             }
@@ -122,16 +130,23 @@ public class DroneService {
             boolean condicaoAdversa = Math.random() < 0.3; // 30% chance de condições adversas
             double bateriaConsumida = simuladorBateria.calcularConsumoReal(distancia, pesoTotal, condicaoAdversa);
             
-            // Verificar se há bateria suficiente para continuar
-            if (!simuladorBateria.bateriaSeguraParaMissao(drone.getBateriaAtual(), 
-                calcularDistancia(pedido.getX(), pedido.getY(), 0, 0) * 2, pesoTotal)) {
-                // Retornar à base para recarregar
+            // Verificar se há bateria suficiente para continuar e retornar
+            double distanciaRetorno = calcularDistancia(pedido.getX(), pedido.getY(), 0, 0);
+            if (!simuladorBateria.bateriaSuficienteParaRetorno(drone.getBateriaAtual() - bateriaConsumida, distanciaRetorno)) {
+                // Bateria insuficiente - retornar à base imediatamente
+                System.out.println("⚠️ Drone " + drone.getId() + " cancelando entrega - bateria insuficiente para retorno seguro");
                 break;
             }
             
             // Consumir bateria e mover drone
             drone.consumirBateria(bateriaConsumida);
             drone.setPosicao(pedido.getX(), pedido.getY());
+            
+            // Verificar novamente após consumo se ainda é seguro continuar
+            if (simuladorBateria.isBateriaCritica(drone.getBateriaAtual())) {
+                System.out.println("🔋 Drone " + drone.getId() + " com bateria crítica - interrompendo entregas");
+                break;
+            }
             
             drone.setEstado(EstadoDrone.ENTREGANDO);
             
@@ -155,13 +170,14 @@ public class DroneService {
         drone.setPosicao(0, 0);
         drone.limparPedidos();
         
-        // Verificar se precisa recarregar
-        if (drone.getBateriaAtual() < BATERIA_MINIMA_RETORNO) {
-            drone.setEstado(EstadoDrone.CARREGANDO);
-            drone.recarregar();
+        // Verificar se precisa recarregar baseado nos novos critérios
+        if (simuladorBateria.isBateriaBaixa(drone.getBateriaAtual())) {
+            drone.iniciarRecarga();
+            System.out.println("🔋 Drone " + drone.getId() + " iniciando recarga - bateria em " + 
+                              Math.round(drone.getBateriaAtual()) + "%");
+        } else {
+            drone.setEstado(EstadoDrone.IDLE);
         }
-        
-        drone.setEstado(EstadoDrone.IDLE);
     }
 
     private boolean verificarZonaExclusao(int x1, int y1, int x2, int y2) {
@@ -276,5 +292,143 @@ public class DroneService {
         for (Drone drone : drones) {
             drone.recarregar();
         }
+    }
+    
+    /**
+     * Gerencia drones com bateria baixa ou em recarga
+     */
+    private void gerenciarBateriaBaixa() {
+        for (Drone drone : drones) {
+            // Atualizar recarga de drones que estão carregando
+            if (drone.getEstado() == EstadoDrone.CHARGING) {
+                drone.atualizarRecarga(1.5); // 1.5% por minuto
+                continue;
+            }
+            
+            // Verificar se bateria está criticamente baixa
+            if (simuladorBateria.isBateriaCritica(drone.getBateriaAtual())) {
+                if (drone.getEstado() != EstadoDrone.RETORNANDO && drone.getEstado() != EstadoDrone.CHARGING) {
+                    // Retorno de emergência
+                    forcarRetornoEmergencia(drone);
+                }
+            }
+            // Verificar se bateria está baixa e drone está em missão
+            else if (simuladorBateria.isBateriaBaixa(drone.getBateriaAtual())) {
+                if (drone.getEstado() == EstadoDrone.EM_VOO || drone.getEstado() == EstadoDrone.ENTREGANDO) {
+                    // Verificar se tem bateria suficiente para retornar
+                    double distanciaBase = calcularDistancia(drone.getPosX(), drone.getPosY(), 0, 0);
+                    if (!simuladorBateria.bateriaSuficienteParaRetorno(drone.getBateriaAtual(), distanciaBase)) {
+                        forcarRetornoEmergencia(drone);
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * Força retorno de emergência de um drone
+     */
+    private void forcarRetornoEmergencia(Drone drone) {
+        System.out.println("⚠️ ALERTA: Drone " + drone.getId() + " com bateria baixa (" + 
+                          Math.round(drone.getBateriaAtual()) + "%) - Retornando à base!");
+        
+        drone.retornoEmergencia();
+        
+        // Simular retorno imediato à base
+        double distanciaRetorno = calcularDistancia(drone.getPosX(), drone.getPosY(), 0, 0);
+        double bateriaRetorno = simuladorBateria.calcularConsumoReal(distanciaRetorno, 0, false);
+        
+        drone.consumirBateria(bateriaRetorno);
+        drone.setPosicao(0, 0);
+        
+        // Iniciar recarga automática
+        drone.iniciarRecarga();
+        System.out.println("🔋 Drone " + drone.getId() + " iniciou recarga automática");
+    }
+    
+    /**
+     * Verifica se drone tem bateria suficiente para missão
+     */
+    private boolean verificarBateriaSuficienteParaMissao(Drone drone, List<Pedido> pedidos) {
+        if (pedidos.isEmpty()) return true;
+        
+        // Calcular distância total da missão
+        double distanciaTotal = 0;
+        int currentX = drone.getPosX();
+        int currentY = drone.getPosY();
+        
+        for (Pedido pedido : pedidos) {
+            distanciaTotal += calcularDistancia(currentX, currentY, pedido.getX(), pedido.getY());
+            currentX = pedido.getX();
+            currentY = pedido.getY();
+        }
+        
+        // Adicionar distância de retorno à base
+        distanciaTotal += calcularDistancia(currentX, currentY, 0, 0);
+        
+        // Calcular peso total
+        double pesoTotal = pedidos.stream().mapToDouble(Pedido::getPeso).sum();
+        
+        // Verificar se bateria é suficiente
+        return simuladorBateria.bateriaSeguraParaMissao(drone.getBateriaAtual(), distanciaTotal, pesoTotal);
+    }
+    
+    /**
+     * Retorna status detalhado da bateria de todos os drones
+     */
+    public Map<String, Object> getStatusBateria() {
+        Map<String, Object> status = new HashMap<>();
+        List<Map<String, Object>> dronesStatus = new ArrayList<>();
+        
+        int dronesComBateriaBaixa = 0;
+        int dronesEmRecarga = 0;
+        
+        for (Drone drone : drones) {
+            Map<String, Object> droneInfo = new HashMap<>();
+            droneInfo.put("id", drone.getId());
+            droneInfo.put("bateria", Math.round(drone.getBateriaAtual() * 100.0) / 100.0);
+            droneInfo.put("estado", drone.getEstado().toString());
+            droneInfo.put("posicao", Map.of("x", drone.getPosX(), "y", drone.getPosY()));
+            droneInfo.put("bateriaBaixa", simuladorBateria.isBateriaBaixa(drone.getBateriaAtual()));
+            droneInfo.put("bateriaCritica", simuladorBateria.isBateriaCritica(drone.getBateriaAtual()));
+            droneInfo.put("emRecarga", drone.isEmRecarga());
+            
+            if (drone.isEmRecarga()) {
+                droneInfo.put("tempoRecargaMinutos", drone.getTempoRecargaMinutos());
+                dronesEmRecarga++;
+            }
+            
+            if (simuladorBateria.isBateriaBaixa(drone.getBateriaAtual())) {
+                dronesComBateriaBaixa++;
+            }
+            
+            dronesStatus.add(droneInfo);
+        }
+        
+        status.put("drones", dronesStatus);
+        status.put("totalDrones", drones.size());
+        status.put("dronesComBateriaBaixa", dronesComBateriaBaixa);
+        status.put("dronesEmRecarga", dronesEmRecarga);
+        status.put("timestamp", System.currentTimeMillis());
+        
+        return status;
+    }
+    
+    /**
+     * Força retorno manual de um drone específico
+     */
+    public boolean forcarRetornoManual(String droneId) {
+        for (Drone drone : drones) {
+            if (drone.getId().equals(droneId)) {
+                if (drone.getEstado() == EstadoDrone.IDLE || 
+                    drone.getEstado() == EstadoDrone.CHARGING) {
+                    return false; // Já está na base
+                }
+                
+                forcarRetornoEmergencia(drone);
+                return true;
+            }
+        }
+        return false;
     }
 }

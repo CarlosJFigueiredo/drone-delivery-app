@@ -39,18 +39,19 @@ export default function DashboardAvancado() {
 
   const carregarDados = async () => {
     try {
-      const [statsRes, dronesRes, entregasRes] = await Promise.all([
+      const [statsRes, dronesRes, entregasRes, bateriaRes] = await Promise.all([
         api.get('/pedidos/estatisticas'),
         api.get('/drones'),
-        api.get('/pedidos/entregas')
+        api.get('/pedidos/entregas'),
+        api.get('/drones/status-bateria')
       ]);
       
       setEstatisticas(statsRes.data);
       setDrones(dronesRes.data);
       setEntregas(entregasRes.data);
       
-      // Gerar alertas baseados nos dados
-      gerarAlertas(dronesRes.data);
+      // Gerar alertas baseados nos dados de bateria
+      gerarAlertasBateria(bateriaRes.data);
       
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
@@ -81,37 +82,51 @@ export default function DashboardAvancado() {
     }
   };
 
-  const gerarAlertas = (dronesData) => {
+  const gerarAlertasBateria = (dadosBateria) => {
     const novosAlertas = [];
     
-    dronesData.forEach(drone => {
-      if (drone.bateriaAtual < 20) {
-        novosAlertas.push({
-          id: `battery-${drone.id}`,
-          tipo: 'warning',
-          mensagem: `Drone ${drone.id} com bateria baixa (${Math.round(drone.bateriaAtual)}%)`
-        });
-      }
-      
-      if (drone.bateriaAtual < 10) {
-        novosAlertas.push({
-          id: `critical-${drone.id}`,
-          tipo: 'error',
-          mensagem: `Drone ${drone.id} com bateria crítica (${Math.round(drone.bateriaAtual)}%)`
-        });
-      }
-    });
+    if (dadosBateria && dadosBateria.drones) {
+      dadosBateria.drones.forEach(drone => {
+        if (drone.bateriaCritica) {
+          novosAlertas.push({
+            id: `critical-${drone.id}`,
+            tipo: 'error',
+            mensagem: `🔋 CRÍTICO: Drone ${drone.id} com bateria crítica (${Math.round(drone.bateria)}%)`
+          });
+        } else if (drone.bateriaBaixa) {
+          novosAlertas.push({
+            id: `battery-${drone.id}`,
+            tipo: 'warning',
+            mensagem: `⚠️ Drone ${drone.id} com bateria baixa (${Math.round(drone.bateria)}%)`
+          });
+        }
+        
+        if (drone.emRecarga) {
+          novosAlertas.push({
+            id: `charging-${drone.id}`,
+            tipo: 'info',
+            mensagem: `🔌 Drone ${drone.id} recarregando (${Math.round(drone.bateria)}%)`
+          });
+        }
+      });
+    }
     
     setAlertas(novosAlertas);
   };
 
-  const simularEventos = async () => {
+  const forcarRetornoDrone = async (droneId) => {
     try {
-      await api.post('/tempo-real/eventos');
+      await api.post(`/drones/forcar-retorno/${droneId}`);
       await carregarDados();
     } catch (error) {
-      console.error('Erro ao simular eventos:', error);
+      console.error('Erro ao forçar retorno do drone:', error);
     }
+  };
+
+  const getBatteryColor = (bateria) => {
+    if (bateria > 50) return '#27ae60'; // Verde
+    if (bateria > 20) return '#f39c12'; // Amarelo
+    return '#e74c3c'; // Vermelho
   };
 
   if (loading) {
@@ -142,14 +157,6 @@ export default function DashboardAvancado() {
           >
             {tempoRealAtivo ? <FaPause /> : <FaPlay />}
             {tempoRealAtivo ? 'Pausar' : 'Iniciar'} Simulação
-          </button>
-          
-          <button 
-            onClick={simularEventos}
-            className="control-btn btn-secondary"
-          >
-            <FaCog />
-            Simular Eventos
           </button>
           
           <button 
@@ -259,12 +266,20 @@ export default function DashboardAvancado() {
                         className="battery-fill" 
                         style={{ 
                           width: `${drone.bateriaAtual}%`,
-                          backgroundColor: drone.bateriaAtual > 50 ? '#27ae60' : 
-                                         drone.bateriaAtual > 20 ? '#f39c12' : '#e74c3c'
+                          backgroundColor: getBatteryColor(drone.bateriaAtual)
                         }}
                       ></div>
                     </div>
                     <span className="metric-value">{Math.round(drone.bateriaAtual)}%</span>
+                    {drone.bateriaAtual < 20 && (
+                      <button 
+                        className="emergency-return-btn"
+                        onClick={() => forcarRetornoDrone(drone.id)}
+                        title="Forçar retorno à base"
+                      >
+                        🏠
+                      </button>
+                    )}
                   </div>
                   
                   <div className="performance-metric">

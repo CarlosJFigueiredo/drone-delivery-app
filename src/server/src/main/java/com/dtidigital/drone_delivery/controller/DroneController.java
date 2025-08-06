@@ -55,6 +55,21 @@ public class DroneController {
         return ResponseEntity.ok("Todos os drones foram recarregados.");
     }
 
+    @GetMapping("/status-bateria")
+    public ResponseEntity<Map<String, Object>> getStatusBateria() {
+        return ResponseEntity.ok(droneService.getStatusBateria());
+    }
+
+    @PostMapping("/forcar-retorno/{droneId}")
+    public ResponseEntity<String> forcarRetorno(@PathVariable String droneId) {
+        boolean sucesso = droneService.forcarRetornoManual(droneId);
+        if (sucesso) {
+            return ResponseEntity.ok("Drone " + droneId + " forçado a retornar à base.");
+        } else {
+            return ResponseEntity.badRequest().body("Drone " + droneId + " não encontrado ou não disponível para retorno.");
+        }
+    }
+
     @GetMapping("/zonas-exclusao")
     public ResponseEntity<List<ZonaExclusao>> listarZonasExclusao() {
         return ResponseEntity.ok(droneService.getZonasExclusao());
