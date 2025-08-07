@@ -50,7 +50,6 @@ export default function DashboardAvancado() {
       setDrones(dronesRes.data);
       setEntregas(entregasRes.data);
       
-      // Gerar alertas baseados nos dados de bateria
       gerarAlertasBateria(bateriaRes.data);
       
     } catch (error) {
@@ -124,9 +123,9 @@ export default function DashboardAvancado() {
   };
 
   const getBatteryColor = (bateria) => {
-    if (bateria > 50) return '#27ae60'; // Verde
-    if (bateria > 20) return '#f39c12'; // Amarelo
-    return '#e74c3c'; // Vermelho
+    if (bateria > 50) return '#27ae60';
+    if (bateria > 20) return '#f39c12';
+    return '#e74c3c';
   };
 
   if (loading) {

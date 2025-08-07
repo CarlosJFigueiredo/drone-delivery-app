@@ -33,10 +33,8 @@ export default function MonitoramentoTempo() {
   });
 
   useEffect(() => {
-    // Carregar dados iniciais
     carregarDados();
     
-    // Setup intervalo para atualização em tempo real
     let intervalo;
     if (simulacaoAtiva) {
       intervalo = setInterval(atualizarDados, 2000);

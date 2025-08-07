@@ -3,7 +3,6 @@ import './App.css';
 import api from './services/api';
 
 export default function App() {
-  // Estados principais
   const [activeSection, setActiveSection] = useState('cadastros');
   const [drones, setDrones] = useState([]);
   const [pedidos, setPedidos] = useState([]);
@@ -11,7 +10,6 @@ export default function App() {
   const [stats, setStats] = useState({});
   const [zonasExclusao, setZonasExclusao] = useState([]);
   
-  // Estados dos formulários
   const [novoDrone, setNovoDrone] = useState({ id: '', capacidade: '', autonomia: '' });
   const [novoPedido, setNovoPedido] = useState({ cliente: '', x: '', y: '', peso: '', prioridade: 'MEDIA' });
   const [novaZona, setNovaZona] = useState({ x1: '', y1: '', x2: '', y2: '', nome: '', motivo: '' });

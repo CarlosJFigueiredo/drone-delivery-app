@@ -8,7 +8,6 @@ export default function Estatisticas() {
 
   useEffect(() => {
     fetchEstatisticas();
-    // Auto-refresh a cada 60 segundos
     const interval = setInterval(fetchEstatisticas, 60000);
     return () => clearInterval(interval);
   }, []);
@@ -118,7 +117,6 @@ export default function Estatisticas() {
         </div>
       </div>
 
-      {/* Performance Grid Detalhada */}
       <div style={{ marginTop: '40px' }}>
         <h3>📈 Performance Detalhada</h3>
         <div className="performance-grid">
@@ -150,7 +148,6 @@ export default function Estatisticas() {
         </div>
       </div>
 
-      {/* Resumo de Ações */}
       <div className="action-summary">
         <div className="summary-item">
           <div className="summary-label">Entregas Hoje</div>
@@ -173,7 +170,6 @@ export default function Estatisticas() {
         </div>
       </div>
 
-      {/* Status em Tempo Real */}
       <div style={{ marginTop: '30px', textAlign: 'center' }}>
         <div className="alert alert-success">
           🟢 Sistema operacional • Última atualização: {new Date().toLocaleTimeString()}

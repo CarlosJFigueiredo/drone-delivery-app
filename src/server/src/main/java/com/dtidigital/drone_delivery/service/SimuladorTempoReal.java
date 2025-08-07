@@ -23,8 +23,6 @@ public class SimuladorTempoReal {
     
     public SimuladorTempoReal(DroneService droneService) {
         this.droneService = droneService;
-        // Não iniciar simulação automaticamente
-        // A simulação será controlada via endpoints
     }
     
     /**

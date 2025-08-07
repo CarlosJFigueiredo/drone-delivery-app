@@ -87,15 +87,20 @@ src/client/
 
 ### 📦 Gestão de Pedidos
 - `POST /api/pedidos` - Criar novo pedido
-- `GET /api/pedidos/pendentes` - Listar pedidos na fila
+- `GET /api/pedidos/fila` - Listar pedidos na fila
+- `GET /api/pedidos/pendentes` - Listar pedidos pendentes  
 - `GET /api/pedidos/entregas` - Histórico de entregas
 - `GET /api/pedidos/estatisticas` - Métricas do sistema
+- `GET /api/pedidos/status/{id}` - Status de um pedido específico
 
 ### 🚁 Gestão de Drones
 - `POST /api/drones` - Cadastrar drone
 - `GET /api/drones` - Listar drones e status
 - `POST /api/drones/simular` - Executar simulação de entregas
+- `POST /api/drones/recarregar/{id}` - Recarregar drone específico
 - `POST /api/drones/recarregar-todos` - Recarregar todos os drones
+- `GET /api/drones/status-bateria` - Status detalhado de bateria
+- `POST /api/drones/forcar-retorno/{id}` - Forçar retorno de drone
 
 ### 🚫 Zonas de Exclusão
 - `GET /api/drones/zonas-exclusao` - Listar zonas
@@ -103,13 +108,14 @@ src/client/
 
 ### ⏱️ Tempo Real
 - `GET /api/tempo-real/status` - Status atual do sistema
-- `POST /api/tempo-real/iniciar` - Iniciar simulação
-- `POST /api/tempo-real/parar` - Parar simulação
+- `POST /api/tempo-real/iniciar` - Iniciar simulação automática
+- `POST /api/tempo-real/parar` - Parar simulação automática
+- `POST /api/tempo-real/eventos` - Simular eventos aleatórios
 
 ## 🧪 Testes Automatizados
 
 ### ✅ Cobertura Implementada
-- **Testes Unitários**: 32 testes cobrindo regras principais
+- **Testes Unitários**: 43 testes cobrindo regras principais
 - **Testes de Integração**: Validação completa das APIs
 - **Testes de Modelo**: Validação de entidades e lógica de negócio
 - **Testes de Serviço**: Algoritmos de otimização e simulação

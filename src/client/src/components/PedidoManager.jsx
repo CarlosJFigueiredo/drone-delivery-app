@@ -52,7 +52,6 @@ export default function PedidoManager() {
     carregarDrones();
   }, []);
 
-  // Limpar pesquisa e filtros quando mudar de aba
   useEffect(() => {
     setSearchTerm('');
     setFilterStatus('TODOS');
@@ -100,7 +99,6 @@ export default function PedidoManager() {
     try {
       console.log('🚀 Dados do formulário:', formData);
       
-      // Validação básica
       if (!formData.cliente || !formData.cliente.trim()) {
         alert('Nome do cliente é obrigatório!');
         setLoading(false);
@@ -113,7 +111,6 @@ export default function PedidoManager() {
         return;
       }
       
-      // Converter strings para números
       const pedidoData = {
         cliente: formData.cliente.trim(),
         x: formData.x ? parseFloat(formData.x) : 0,

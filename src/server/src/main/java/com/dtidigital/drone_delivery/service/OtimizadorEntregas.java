@@ -18,7 +18,6 @@ public class OtimizadorEntregas {
     public List<List<Pedido>> otimizarAlocacao(List<Drone> drones, List<Pedido> pedidos) {
         List<List<Pedido>> alocacoes = new ArrayList<>();
         
-        // Ordenar pedidos por prioridade e depois por eficiência (peso/distância)
         List<Pedido> pedidosOrdenados = pedidos.stream()
             .sorted(this::compararPedidos)
             .collect(Collectors.toList());
@@ -59,7 +58,6 @@ public class OtimizadorEntregas {
     private List<List<Pedido>> gerarCombinacoesValidas(Drone drone, List<Pedido> pedidos) {
         List<List<Pedido>> combinacoes = new ArrayList<>();
         
-        // Implementação gulosa para performance
         List<Pedido> combinacaoAtual = new ArrayList<>();
         double pesoTotal = 0;
         double distanciaTotal = 0;

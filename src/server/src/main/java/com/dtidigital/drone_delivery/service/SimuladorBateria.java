@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class SimuladorBateria {
     
-    // Configurações do simulador
     private static final double CONSUMO_VENTO = 1.2; // Fator de vento (20% a mais)
     private static final double CONSUMO_TEMPERATURA = 1.1; // Fator temperatura (10% a mais)
     private static final double CONSUMO_PESO = 0.1; // 10% adicional por kg de peso
@@ -15,18 +14,15 @@ public class SimuladorBateria {
      * Calcula o consumo real de bateria considerando fatores ambientais
      */
     public double calcularConsumoReal(double distancia, double peso, boolean condicaoAdversa) {
-        double consumoBase = distancia * 0.5; // 0.5 unidades por km
+        double consumoBase = distancia * 0.5;
         
-        // Aplicar fatores ambientais
         if (condicaoAdversa) {
             consumoBase *= CONSUMO_VENTO;
             consumoBase *= CONSUMO_TEMPERATURA;
         }
         
-        // Aplicar fator de peso
         consumoBase += (peso * CONSUMO_PESO);
         
-        // Aplicar eficiência da bateria
         consumoBase /= EFICIENCIA_BATERIA;
         
         return consumoBase;

@@ -92,7 +92,6 @@ export default function MapaEntregas() {
         boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
       }}>
         <svg width={width} height={height} style={{ background: '#ecf0f1' }}>
-          {/* Grid */}
           <defs>
             <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
               <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#d5dbdb" strokeWidth="1"/>
@@ -100,7 +99,6 @@ export default function MapaEntregas() {
           </defs>
           <rect width="100%" height="100%" fill="url(#grid)" />
 
-          {/* Zonas de Exclusão */}
           {zonasExclusao.map((zona, index) => {
             const p1 = coordenadaParaPixel(zona.x1, zona.y1, escala, width, height);
             const p2 = coordenadaParaPixel(zona.x2, zona.y2, escala, width, height);
@@ -120,7 +118,6 @@ export default function MapaEntregas() {
             );
           })}
 
-          {/* Base */}
           {(() => {
             const base = coordenadaParaPixel(0, 0, escala, width, height);
             return (
@@ -133,7 +130,6 @@ export default function MapaEntregas() {
             );
           })()}
 
-          {/* Drones */}
           {drones.map((drone) => {
             const pos = coordenadaParaPixel(drone.posX, drone.posY, escala, width, height);
             const bateriaPercent = (drone.bateriaAtual / drone.autonomiaMaxima) * 100;
@@ -171,7 +167,6 @@ export default function MapaEntregas() {
             );
           })}
 
-          {/* Pedidos Pendentes */}
           {pedidosPendentes.map((pedido, index) => {
             const pos = coordenadaParaPixel(pedido.x, pedido.y, escala, width, height);
             let corPrioridade = '#3498db';
@@ -194,7 +189,6 @@ export default function MapaEntregas() {
             );
           })}
 
-          {/* Entregas Realizadas */}
           {entregas.slice(-5).map((entrega, index) => {
             const pos = coordenadaParaPixel(entrega.pedido.x, entrega.pedido.y, escala, width, height);
             return (
@@ -209,7 +203,6 @@ export default function MapaEntregas() {
 
         </svg>
 
-        {/* Legenda Simples */}
         <div style={{
           position: 'absolute',
           top: '10px',
@@ -231,7 +224,6 @@ export default function MapaEntregas() {
           <div><span style={{ color: '#e74c3c' }}>▨</span> Zona de Exclusão</div>
         </div>
 
-        {/* Status */}
         <div style={{
           position: 'absolute',
           bottom: '10px',

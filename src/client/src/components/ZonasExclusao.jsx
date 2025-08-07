@@ -31,7 +31,6 @@ export default function ZonasExclusao() {
     setLoading(true);
     
     try {
-      // Validação básica
       if (!novaZona.nome?.trim()) {
         alert('Nome da zona é obrigatório!');
         setLoading(false);
@@ -44,7 +43,6 @@ export default function ZonasExclusao() {
         return;
       }
       
-      // Validar coordenadas
       const x1 = parseInt(novaZona.x1);
       const y1 = parseInt(novaZona.y1);
       const x2 = parseInt(novaZona.x2);

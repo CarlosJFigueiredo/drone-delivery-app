@@ -22,21 +22,18 @@ public class DroneService {
     private final SimuladorBateria simuladorBateria;
     private final OtimizadorEntregas otimizadorEntregas;
     
-    // Configurações do sistema
-    private static final double VELOCIDADE_DRONE_KM_H = 30.0; // 30 km/h
-    private static final double BATERIA_MINIMA_RETORNO = 5.0; // 5% da bateria para retorno seguro
-    private static final double BATERIA_CRITICA = 10.0; // 10% é considerado crítico
-    private static final double BATERIA_BAIXA = 20.0; // 20% é considerado baixo
+    private static final double VELOCIDADE_DRONE_KM_H = 30.0;
+    private static final double BATERIA_MINIMA_RETORNO = 5.0;
+    private static final double BATERIA_CRITICA = 10.0;
+    private static final double BATERIA_BAIXA = 20.0;
 
     @Autowired
     public DroneService(SimuladorBateria simuladorBateria, OtimizadorEntregas otimizadorEntregas) {
         this.simuladorBateria = simuladorBateria;
         this.otimizadorEntregas = otimizadorEntregas;
-        // Inicializar zonas de exclusão padrão
         inicializarZonasExclusao();
     }
 
-    // Construtor para compatibilidade com testes
     public DroneService() {
         this.simuladorBateria = new SimuladorBateria();
         this.otimizadorEntregas = new OtimizadorEntregas();
@@ -44,7 +41,6 @@ public class DroneService {
     }
 
     private void inicializarZonasExclusao() {
-        // Nenhuma zona padrão - usuário pode criar suas próprias zonas via interface
     }
 
     public void cadastrarDrone(String id, double capacidade, double autonomia) {
