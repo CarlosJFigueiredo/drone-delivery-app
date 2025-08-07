@@ -492,6 +492,18 @@
   to { transform: rotate(360deg); }
 }
 
+/* Responsive Breakpoints */
+@media (max-width: 1200px) {
+  .dashboard-avancado {
+    padding: 15px;
+  }
+  
+  .metrics-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+  }
+}
+
 @media (max-width: 1024px) {
   .dashboard-content {
     grid-template-columns: 1fr;
@@ -500,29 +512,116 @@
   .dashboard-header {
     flex-direction: column;
     gap: 16px;
+    padding: 20px;
+  }
+  
+  .header-title h1 {
+    font-size: 24px;
+  }
+  
+  .metrics-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   }
   
   .header-controls {
     width: 100%;
     justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .metric-card {
+    padding: 20px;
   }
 }
 
 @media (max-width: 768px) {
   .dashboard-avancado {
     padding: 10px;
+    margin-bottom: 90px; /* Space for bottom navigation */
+  }
+  
+  .dashboard-header {
+    padding: 16px;
+    border-radius: 12px;
+  }
+  
+  .header-title h1 {
+    font-size: 20px;
   }
   
   .metrics-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
   }
   
   .drones-performance {
     grid-template-columns: 1fr;
+    gap: 15px;
   }
   
   .control-btn {
     min-width: auto;
     flex: 1;
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+  
+  .metric-card {
+    padding: 16px;
+    border-radius: 12px;
+  }
+  
+  .metric-title {
+    font-size: 14px;
+  }
+  
+  .metric-value {
+    font-size: 24px;
+  }
+  
+  .drone-item {
+    padding: 12px 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .action-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-avancado {
+    padding: 8px;
+  }
+  
+  .dashboard-header {
+    padding: 12px;
+    border-radius: 10px;
+  }
+  
+  .header-title h1 {
+    font-size: 18px;
+  }
+  
+  .metrics-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+  }
+  
+  .metric-card {
+    padding: 12px;
+    border-radius: 10px;
+  }
+  
+  .control-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  
+  .header-controls {
+    gap: 8px;
   }
 }

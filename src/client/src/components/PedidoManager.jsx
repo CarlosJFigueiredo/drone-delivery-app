@@ -21,6 +21,7 @@ import {
 } from 'react-icons/fa';
 import api from '../services/api';
 import './PedidoManager.css';
+import './PedidoManagerResponsive.css';
 
 export default function PedidoManager() {
   const [activeTab, setActiveTab] = useState('pedidos');

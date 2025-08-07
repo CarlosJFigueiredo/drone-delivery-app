@@ -10,13 +10,14 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   overflow-x: hidden;
+  padding: 20px;
 }
 
 .section-placeholder {
   padding: 40px;
   text-align: center;
   background: rgba(255, 255, 255, 0.95);
-  margin: 20px;
+  margin: 20px 0;
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
   backdrop-filter: blur(4px);
@@ -36,10 +37,66 @@
   font-weight: 500;
 }
 
-/* Mobile responsiveness */
+/* Responsive Breakpoints */
+/* Tablet */
+@media (max-width: 1024px) {
+  .main-content {
+    margin-left: 280px;
+    padding: 15px;
+  }
+  
+  .section-placeholder {
+    padding: 30px 20px;
+    margin: 15px 0;
+  }
+  
+  .section-placeholder h2 {
+    font-size: 24px;
+  }
+}
+
+/* Mobile */
 @media (max-width: 768px) {
+  .app-new {
+    flex-direction: column;
+  }
+  
   .main-content {
     margin-left: 0;
     margin-top: 0;
+    padding: 10px;
+    min-height: calc(100vh - 80px);
+  }
+  
+  .section-placeholder {
+    padding: 20px 15px;
+    margin: 10px 0;
+    border-radius: 12px;
+  }
+  
+  .section-placeholder h2 {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+  
+  .section-placeholder p {
+    font-size: 14px;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .main-content {
+    padding: 8px;
+  }
+  
+  .section-placeholder {
+    padding: 15px 10px;
+    margin: 8px 0;
+    border-radius: 8px;
+  }
+  
+  .section-placeholder h2 {
+    font-size: 18px;
   }
 }

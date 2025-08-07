@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
+import './Estatisticas.css';
 
 export default function Estatisticas() {
   const [stats, setStats] = useState({});
@@ -67,7 +68,7 @@ export default function Estatisticas() {
   };
 
   if (loading) return (
-    <div className="loading">
+    <div className="loading-container">
       <div className="loading-spinner"></div>
       <p>Carregando estatísticas...</p>
     </div>
@@ -83,15 +84,15 @@ export default function Estatisticas() {
   );
 
   return (
-    <div className="estatisticas">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+    <div className="estatisticas-container">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', flexWrap: 'wrap', gap: '10px' }}>
         <h2>📊 Estatísticas do Sistema</h2>
         <button onClick={fetchEstatisticas} className="refresh-btn">
           🔄 Atualizar Dados
         </button>
       </div>
       
-      <div className="stats-grid">
+      <div className="estatisticas-grid">
         <div className="stat-card glass-card">
           <h3>📦 Entregas Realizadas</h3>
           <div className="stat-value completed">{stats.totalEntregas || 0}</div>
@@ -185,9 +186,9 @@ export default function Estatisticas() {
       </div>
 
       {/* Status da Frota */}
-      <div style={{ marginTop: '30px' }}>
+      <div className="estatisticas-section">
         <h2>📊 Status da Frota</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', marginTop: '15px' }}>
+        <div className="estatisticas-grid">
           <div className="stat-card glass-card">
             <h4>🚁 Drones Ativos</h4>
             <div className="stat-value" style={{ color: '#22c55e' }}>{stats.dronesAtivos || 0}</div>
@@ -218,9 +219,9 @@ export default function Estatisticas() {
 
       {/* Estatísticas por Prioridade */}
       {stats.pedidosPorPrioridade && Object.keys(stats.pedidosPorPrioridade).length > 0 && (
-        <div style={{ marginTop: '30px' }}>
+        <div className="estatisticas-section">
           <h2>📋 Pedidos por Prioridade</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '15px', marginTop: '15px' }}>
+          <div className="estatisticas-grid">
             {Object.entries(stats.pedidosPorPrioridade).map(([prioridade, quantidade]) => (
               <div key={prioridade} className="stat-card glass-card">
                 <h4>{getPriorityIcon(prioridade)} {prioridade}</h4>
@@ -240,9 +241,9 @@ export default function Estatisticas() {
 
       {/* Status dos Drones */}
       {stats.statusFrota && Object.keys(stats.statusFrota).length > 0 && (
-        <div style={{ marginTop: '30px' }}>
+        <div className="estatisticas-section">
           <h2>🔧 Status Individual</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '15px', marginTop: '15px' }}>
+          <div className="estatisticas-grid">
             {Object.entries(stats.statusFrota).map(([status, quantidade]) => (
               <div key={status} className="stat-card glass-card">
                 <h4>
@@ -263,63 +264,7 @@ export default function Estatisticas() {
         </div>
       )}
 
-      <div style={{ marginTop: '40px' }}>
-        <h3>📈 Performance Detalhada</h3>
-        <div className="performance-grid">
-          <div className="performance-item glass-card-dark">
-            <span className="performance-label">📦 Taxa de Sucesso</span>
-            <span className="performance-value completed">
-              {stats.totalEntregas > 0 ? '100%' : '0%'}
-            </span>
-          </div>
-          
-          <div className="performance-item glass-card-dark">
-            <span className="performance-label">⚡ Eficiência Energética</span>
-            <span className="performance-value">
-              {(() => {
-                const nivel = stats.bateriaMedia;
-                if (nivel > 70) return 'Alta';
-                if (nivel > 40) return 'Média';
-                return 'Baixa';
-              })()}
-            </span>
-          </div>
-          
-          <div className="performance-item glass-card-dark">
-            <span className="performance-label">🎯 Precisão de Rota</span>
-            <span className="performance-value completed">Otimizada</span>
-          </div>
-          
-          <div className="performance-item glass-card-dark">
-            <span className="performance-label">🔄 Tempo de Ciclo</span>
-            <span className="performance-value">
-              {stats.tempoMedioEntrega || 0} min
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div className="action-summary">
-        <div className="summary-item">
-          <div className="summary-label">Entregas Hoje</div>
-          <div className="summary-value completed">{stats.entregasHoje || 0}</div>
-        </div>
-        
-        <div className="summary-item">
-          <div className="summary-label">Em Processamento</div>
-          <div className="summary-value pending">{stats.pedidosProcessando || 0}</div>
-        </div>
-        
-        <div className="summary-item">
-          <div className="summary-label">Drones Ativos</div>
-          <div className="summary-value">{stats.dronesAtivos || 0}</div>
-        </div>
-        
-        <div className="summary-item">
-          <div className="summary-label">Uptime Sistema</div>
-          <div className="summary-value completed">99.9%</div>
-        </div>
-      </div>
+      
 
       <div style={{ marginTop: '30px', textAlign: 'center' }}>
         <div className="alert alert-success">
