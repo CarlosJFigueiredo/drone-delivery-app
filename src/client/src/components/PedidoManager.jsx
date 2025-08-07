@@ -46,10 +46,12 @@ export default function PedidoManager() {
     capacidade: '',
     autonomia: ''
   });
+  const [zonasExclusao, setZonasExclusao] = useState([]);
 
   useEffect(() => {
     carregarPedidos();
     carregarDrones();
+    carregarZonasExclusao();
   }, []);
 
   useEffect(() => {
@@ -92,6 +94,27 @@ export default function PedidoManager() {
     }
   };
 
+  const carregarZonasExclusao = async () => {
+    try {
+      console.log('🔄 Carregando zonas de exclusão...');
+      const response = await api.get('/drones/zonas-exclusao');
+      console.log('✅ Zonas carregadas:', response.data);
+      setZonasExclusao(response.data || []);
+    } catch (error) {
+      console.error('❌ Erro ao carregar zonas:', error);
+      setZonasExclusao([]);
+    }
+  };
+
+  const verificarZonaExclusao = (x, y) => {
+    for (const zona of zonasExclusao) {
+      if (x >= zona.x1 && x <= zona.x2 && y >= zona.y1 && y <= zona.y2) {
+        return zona;
+      }
+    }
+    return null;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -107,6 +130,17 @@ export default function PedidoManager() {
       
       if (!formData.peso || isNaN(parseFloat(formData.peso)) || parseFloat(formData.peso) <= 0) {
         alert('Peso deve ser um número válido maior que zero!');
+        setLoading(false);
+        return;
+      }
+      
+      // Verificar se as coordenadas estão em zona de exclusão
+      const x = formData.x ? parseFloat(formData.x) : 0;
+      const y = formData.y ? parseFloat(formData.y) : 0;
+      const zona = verificarZonaExclusao(x, y);
+      if (zona) {
+        const acao = editingPedido ? 'atualizar' : 'criar';
+        alert(`⚠️ Local não permitido!\n\nAs coordenadas (${x}, ${y}) estão na zona de exclusão "${zona.nome}".\nMotivo: ${zona.motivo}\n\nNão é possível ${acao} pedidos nesta localização.`);
         setLoading(false);
         return;
       }

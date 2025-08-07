@@ -33,8 +33,12 @@ public class PedidoController {
             pedidoDTO.getPrioridade()
         );
 
-        droneService.adicionarPedido(novoPedido);
-        return ResponseEntity.ok("Pedido " + novoPedido.getId() + " adicionado com sucesso!");
+        boolean sucesso = droneService.adicionarPedido(novoPedido);
+        if (sucesso) {
+            return ResponseEntity.ok("Pedido " + novoPedido.getId() + " adicionado com sucesso!");
+        } else {
+            return ResponseEntity.badRequest().body("Pedido rejeitado: destino está em zona de exclusão aérea. Escolha um local diferente para entrega.");
+        }
     }
 
     @GetMapping("/entregas")
@@ -77,7 +81,12 @@ public class PedidoController {
         if (sucesso) {
             return ResponseEntity.ok("Pedido " + pedidoId + " editado com sucesso!");
         } else {
-            return ResponseEntity.badRequest().body("Pedido " + pedidoId + " não encontrado na fila.");
+            // Verificar se o pedido existe para dar erro mais específico
+            if (droneService.buscarPedido(pedidoId) != null) {
+                return ResponseEntity.badRequest().body("Edição rejeitada: novo destino está em zona de exclusão aérea. Escolha um local diferente.");
+            } else {
+                return ResponseEntity.badRequest().body("Pedido " + pedidoId + " não encontrado na fila.");
+            }
         }
     }
     

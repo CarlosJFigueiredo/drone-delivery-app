@@ -52,9 +52,29 @@ public class DroneService {
         return drones;
     }
 
-    public void adicionarPedido(Pedido pedido) {
+    public boolean adicionarPedido(Pedido pedido) {
+        // Verificar se o destino está em zona de exclusão
+        for (ZonaExclusao zona : zonasExclusao) {
+            if (zona.contemPonto(pedido.getX(), pedido.getY())) {
+                System.out.println("⚠️ Pedido rejeitado: destino (" + pedido.getX() + ", " + pedido.getY() + 
+                                 ") está na zona de exclusão '" + zona.getNome() + "' - " + zona.getMotivo());
+                return false; // Pedido rejeitado
+            }
+        }
+        
         filaDePedidos.add(pedido);
         ordenarFila();
+        return true; // Pedido aceito
+    }
+    
+    public String getZonaExclusaoInfo(int x, int y) {
+        for (ZonaExclusao zona : zonasExclusao) {
+            if (zona.contemPonto(x, y)) {
+                return "Coordenada (" + x + ", " + y + ") está na zona de exclusão '" + 
+                       zona.getNome() + "' - " + zona.getMotivo();
+            }
+        }
+        return "Coordenada (" + x + ", " + y + ") não está em zona de exclusão";
     }
 
     private void ordenarFila() {
@@ -502,6 +522,15 @@ public class DroneService {
      * Edita um pedido na fila
      */
     public boolean editarPedido(String id, String cliente, int x, int y, double peso, String prioridade) {
+        // Verificar se o novo destino está em zona de exclusão
+        for (ZonaExclusao zona : zonasExclusao) {
+            if (zona.contemPonto(x, y)) {
+                System.out.println("⚠️ Edição de pedido rejeitada: novo destino (" + x + ", " + y + 
+                                 ") está na zona de exclusão '" + zona.getNome() + "' - " + zona.getMotivo());
+                return false; // Edição rejeitada
+            }
+        }
+        
         for (Pedido pedido : filaDePedidos) {
             if (pedido.getId().equals(id)) {
                 pedido.setCliente(cliente);
