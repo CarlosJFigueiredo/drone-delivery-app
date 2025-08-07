@@ -125,6 +125,13 @@ public class DroneController {
         }
     }
     
+    @GetMapping("/calcular-rota")
+    public ResponseEntity<Map<String, Object>> calcularRota(
+            @RequestParam int xInicio, @RequestParam int yInicio,
+            @RequestParam int xDestino, @RequestParam int yDestino) {
+        return ResponseEntity.ok(droneService.calcularRotaComInfo(xInicio, yInicio, xDestino, yDestino));
+    }
+    
     @PutMapping("/{droneId}")
     public ResponseEntity<String> editarDrone(@PathVariable String droneId, @RequestBody @Valid DroneDTO dto) {
         boolean sucesso = droneService.editarDrone(droneId, dto.getCapacidade(), dto.getAutonomia());

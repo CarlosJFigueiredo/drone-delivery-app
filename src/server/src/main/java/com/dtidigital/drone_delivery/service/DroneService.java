@@ -21,6 +21,7 @@ public class DroneService {
     
     private final SimuladorBateria simuladorBateria;
     private final OtimizadorEntregas otimizadorEntregas;
+    private final CalculadorRota calculadorRota;
     
     private static final double VELOCIDADE_DRONE_KM_H = 30.0;
     private static final double BATERIA_MINIMA_RETORNO = 5.0;
@@ -28,15 +29,17 @@ public class DroneService {
     private static final double BATERIA_BAIXA = 20.0;
 
     @Autowired
-    public DroneService(SimuladorBateria simuladorBateria, OtimizadorEntregas otimizadorEntregas) {
+    public DroneService(SimuladorBateria simuladorBateria, OtimizadorEntregas otimizadorEntregas, CalculadorRota calculadorRota) {
         this.simuladorBateria = simuladorBateria;
         this.otimizadorEntregas = otimizadorEntregas;
+        this.calculadorRota = calculadorRota;
         inicializarZonasExclusao();
     }
 
     public DroneService() {
         this.simuladorBateria = new SimuladorBateria();
         this.otimizadorEntregas = new OtimizadorEntregas();
+        this.calculadorRota = new CalculadorRota();
         inicializarZonasExclusao();
     }
 
@@ -137,14 +140,29 @@ public class DroneService {
             
             drone.setEstado(EstadoDrone.EM_VOO);
             
-            // Calcular tempo e distância
-            double distancia = calcularDistancia(drone.getPosX(), drone.getPosY(), pedido.getX(), pedido.getY());
-            double tempo = calcularTempo(distancia);
+            // **NOVA FUNCIONALIDADE**: Calcular rota segura que evita zonas de exclusão
+            List<CalculadorRota.Point> rotaSegura = calculadorRota.calcularRotaSegura(
+                drone.getPosX(), drone.getPosY(), 
+                pedido.getX(), pedido.getY(), 
+                zonasExclusao, 200 // limite do grid
+            );
+            
+            // Calcular distância total da rota segura (pode ser maior que rota direta)
+            double distanciaTotal = calculadorRota.calcularDistanciaTotal(rotaSegura);
+            double tempo = calcularTempo(distanciaTotal);
+            
+            // Verificar se a rota é diferente da direta
+            if (rotaSegura.size() > 2) {
+                System.out.println("🛣️ Drone " + drone.getId() + " usando rota alternativa para evitar zona de exclusão");
+                System.out.println("   Rota: " + rotaSegura);
+                System.out.println("   Distância: " + Math.round(distanciaTotal) + " unidades (vs " + 
+                                 Math.round(calcularDistancia(drone.getPosX(), drone.getPosY(), pedido.getX(), pedido.getY())) + " direta)");
+            }
             
             // Usar simulador avançado de bateria
             double pesoTotal = rotaOtimizada.stream().mapToDouble(Pedido::getPeso).sum();
             boolean condicaoAdversa = Math.random() < 0.3; // 30% chance de condições adversas
-            double bateriaConsumida = simuladorBateria.calcularConsumoReal(distancia, pesoTotal, condicaoAdversa);
+            double bateriaConsumida = simuladorBateria.calcularConsumoReal(distanciaTotal, pesoTotal, condicaoAdversa);
             
             // Verificar se há bateria suficiente para continuar e retornar
             double distanciaRetorno = calcularDistancia(pedido.getX(), pedido.getY(), 0, 0);
@@ -173,7 +191,7 @@ public class DroneService {
                 Thread.currentThread().interrupt();
             }
             
-            entrega.finalizar(distancia, tempo, bateriaConsumida);
+            entrega.finalizar(distanciaTotal, tempo, bateriaConsumida);
             entregasRealizadas.add(entrega);
         }
 
@@ -244,6 +262,43 @@ public class DroneService {
             }
         }
         return null;
+    }
+    
+    /**
+     * Calcula rota segura e retorna informações detalhadas
+     */
+    public Map<String, Object> calcularRotaComInfo(int xInicio, int yInicio, int xDestino, int yDestino) {
+        Map<String, Object> resultado = new HashMap<>();
+        
+        // Calcular rota segura
+        List<CalculadorRota.Point> rotaSegura = calculadorRota.calcularRotaSegura(
+            xInicio, yInicio, xDestino, yDestino, zonasExclusao, 200
+        );
+        
+        // Calcular distâncias
+        double distanciaDireta = calcularDistancia(xInicio, yInicio, xDestino, yDestino);
+        double distanciaSegura = calculadorRota.calcularDistanciaTotal(rotaSegura);
+        
+        // Verificar se há zonas interceptadas
+        boolean interceptaZona = false;
+        List<String> zonasInterceptadas = new ArrayList<>();
+        for (ZonaExclusao zona : zonasExclusao) {
+            if (zona.interceptaRota(xInicio, yInicio, xDestino, yDestino)) {
+                interceptaZona = true;
+                zonasInterceptadas.add(zona.getNome());
+            }
+        }
+        
+        // Montar resultado
+        resultado.put("rotaSegura", rotaSegura);
+        resultado.put("distanciaDireta", Math.round(distanciaDireta * 10) / 10.0);
+        resultado.put("distanciaSegura", Math.round(distanciaSegura * 10) / 10.0);
+        resultado.put("interceptaZona", interceptaZona);
+        resultado.put("zonasInterceptadas", zonasInterceptadas);
+        resultado.put("desvioNecessario", rotaSegura.size() > 2);
+        resultado.put("acrescimoDistancia", Math.round((distanciaSegura - distanciaDireta) * 10) / 10.0);
+        
+        return resultado;
     }
 
     public Map<String, Object> getEstatisticas() {
