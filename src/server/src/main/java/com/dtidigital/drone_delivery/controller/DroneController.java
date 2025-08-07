@@ -13,7 +13,12 @@ import com.dtidigital.drone_delivery.service.DroneService;
 
 @RestController
 @RequestMapping("/api/drones")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
+@CrossOrigin(origins = {
+    "http://localhost:3000", 
+    "http://localhost:3001",
+    "https://drone-delivery-cq7u.onrender.com",
+    "https://drone-delivery-app.onrender.com"
+})
 public class DroneController {
 
     private final DroneService droneService;
