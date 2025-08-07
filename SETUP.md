@@ -2,6 +2,14 @@
 
 Este guia contém todas as instruções necessárias para executar o **Simulador de Encomendas em Drone** em seu ambiente local.
 
+## 🌐 Demonstração Online Disponível
+
+**🎯 Quer testar rapidamente? [ACESSE A DEMO ONLINE](https://drone-delivery-cq7u.onrender.com/)**
+
+> A aplicação está totalmente funcional online. Use as instruções abaixo apenas se desejar executar localmente para desenvolvimento ou testes avançados.
+
+---
+
 ## 📋 Pré-requisitos
 
 Antes de começar, certifique-se de ter as seguintes ferramentas instaladas:
@@ -27,6 +35,19 @@ npm --version
 # Verificar Maven (opcional - usaremos o wrapper)
 mvn --version
 ```
+
+## 🤔 Demo Online vs Execução Local
+
+| Aspecto | Demo Online | Execução Local |
+|---------|-------------|----------------|
+| **Facilidade** | ✅ Acesso imediato | ⚠️ Requer configuração |
+| **Velocidade** | ⚠️ Cold start inicial | ✅ Performance total |
+| **Desenvolvimento** | ❌ Apenas visualização | ✅ Debugging e edição |
+| **Customização** | ❌ Configuração fixa | ✅ Configuração completa |
+| **Dados** | ⚠️ Sessão temporária | ✅ Controle total |
+
+**👨‍💻 Para desenvolvedores**: Execute localmente  
+**🎯 Para demonstração**: Use a versão online
 
 ## 📦 Clonando o Projeto
 
@@ -256,6 +277,32 @@ Se encontrar problemas:
 2. **Confirme as portas** estão livres (8080 e 3000)
 3. **Verifique os logs** para mensagens de erro específicas
 4. **Teste as APIs** diretamente via browser ou Postman
+
+## 🌐 Alternativa: Demo Online
+
+Se preferir não configurar o ambiente local, utilize a demonstração online:
+
+**🔗 URL**: https://drone-delivery-cq7u.onrender.com/
+
+### Vantagens da Demo Online:
+- ✅ **Zero configuração** - Funciona imediatamente
+- ✅ **Multiplataforma** - Qualquer dispositivo com navegador
+- ✅ **Sempre atualizada** - Versão mais recente
+- ✅ **Todos os recursos** - Funcionalidade completa
+
+### Limitações da Demo:
+- ⚠️ **Cold start** - Primeiro acesso pode demorar
+- ⚠️ **Dados temporários** - Não há persistência permanente
+- ❌ **Não editável** - Apenas para demonstração
+
+### Como Usar a Demo:
+1. Acesse o link acima
+2. Aguarde o carregamento inicial (~30 segundos no primeiro acesso)
+3. Explore todas as funcionalidades:
+   - Dashboard com métricas
+   - Gestão de pedidos e drones
+   - Mapa de entregas em tempo real
+   - Zonas de exclusão aérea
 
 ---
 

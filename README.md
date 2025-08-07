@@ -8,6 +8,12 @@
 ![Node.js](https://img.shields.io/badge/Node.js-LTS-green)
 ![Status](https://img.shields.io/badge/Status-Conclu%C3%ADdo-success)
 
+## 🌐 Demonstração Online
+
+**🚀 [ACESSE A APLICAÇÃO](https://drone-delivery-cq7u.onrender.com/)**
+
+> 📱 A aplicação está hospedada na plataforma Render e pode ser acessada diretamente pelo link acima. Todos os recursos estão funcionais, incluindo simulação de entregas, mapa interativo e dashboard em tempo real.
+
 ## 📋 Sobre o Projeto
 
 Este é um **simulador avançado de entregas por drone** desenvolvido como parte do processo seletivo da DTI Digital. O sistema simula operações reais de entrega, incluindo gerenciamento de bateria, otimização de rotas, zonas de exclusão aérea e muito mais.
@@ -129,7 +135,29 @@ src/client/
 
 ## 📚 Documentação
 
-Para instruções detalhadas de instalação e execução, consulte o [**Guia de Setup**](SETUP.md).
+Para instruções detalhadas de instalação e execução local, consulte o [**Guia de Setup**](SETUP.md).
+
+## 🎮 Como Usar a Demonstração Online
+
+### 1. **Acesso Direto**
+- Clique no link: https://drone-delivery-cq7u.onrender.com/
+- Aguarde alguns segundos para o carregamento inicial (cold start)
+- A aplicação está pronta para uso imediato
+
+### 2. **Primeiros Passos na Demo**
+1. **Dashboard**: Visualize métricas gerais do sistema
+2. **Gestão de Pedidos**: Crie novos pedidos e configure drones
+3. **Mapa das Entregas**: Acompanhe entregas em tempo real
+4. **Zonas de Exclusão**: Configure áreas restritas (opcional)
+
+### 3. **Exemplo de Uso Rápido**
+- Acesse "Gestão de Pedidos" → aba "Drones" → "Novo Drone"
+- Crie um drone: ID: "DRONE-001", Capacidade: 10kg, Autonomia: 100km
+- Vá para aba "Pedidos" → "Novo Pedido"
+- Crie um pedido: Cliente: "Cliente Teste", X: 10, Y: 15, Peso: 5kg
+- Clique em "Simular Entregas" e acompanhe no mapa
+
+> ⚡ **Nota**: Como a aplicação usa hospedagem gratuita, pode haver um pequeno delay no primeiro acesso devido ao "cold start" do servidor.
 
 ## 🎯 Funcionalidades Avançadas Implementadas
 
@@ -181,6 +209,22 @@ O sistema foi projetado para suportar:
 - **Otimização em tempo real** de rotas
 - **Simulação realística** de operações
 
+## 🌐 Deployment e Hospedagem
+
+### 🚀 Aplicação Online
+- **URL**: https://drone-delivery-cq7u.onrender.com/
+- **Plataforma**: Render (hospedagem gratuita)
+- **Backend**: Spring Boot com build automático
+- **Frontend**: React com build estático
+- **Configuração**: Docker para containerização
+
+### 📋 Recursos da Demonstração
+- ✅ **Totalmente funcional** - Todos os recursos implementados
+- ✅ **Dados persistentes** - Sistema mantém estado durante a sessão
+- ✅ **Performance otimizada** - Build de produção
+- ✅ **Responsivo** - Funciona em desktop e mobile
+- ⚠️ **Cold start** - Primeiro acesso pode demorar ~30 segundos
+
 ## 🤝 Contribuições
 
 Este projeto foi desenvolvido como parte do processo seletivo da DTI Digital, demonstrando:
@@ -188,6 +232,7 @@ Este projeto foi desenvolvido como parte do processo seletivo da DTI Digital, de
 - **Pensamento sistêmico** na modelagem de problemas complexos
 - **Boas práticas** de desenvolvimento e testing
 - **Criatividade** na implementação de funcionalidades extras
+- **Deploy e DevOps** com containerização e hospedagem em nuvem
 
 ## 📄 Licença
 
