@@ -9,7 +9,7 @@ import {
 } from 'react-icons/fa';
 import './Navigation.css';
 
-export default function Navigation({ activeSection, setActiveSection }) {
+export default function Navigation({ activeSection, setActiveSection, isMobile, isNavOpen, setIsNavOpen }) {
   const navigationItems = [
     {
       id: 'dashboard',
@@ -43,13 +43,29 @@ export default function Navigation({ activeSection, setActiveSection }) {
     }
   ];
 
+  const handleNavItemClick = (sectionId) => {
+    setActiveSection(sectionId);
+    if (isMobile && setIsNavOpen) {
+      setIsNavOpen(false);
+    }
+  };
+
   return (
-    <nav className="navigation">
+    <nav className={`navigation ${isMobile ? 'mobile' : ''} ${isMobile && isNavOpen ? 'nav-open' : ''}`}>
       <div className="nav-header">
         <div className="nav-logo">
           <FaRobot className="logo-icon" />
           <span className="logo-text">DroneDelivery</span>
         </div>
+        {isMobile && (
+          <button 
+            className="nav-close"
+            onClick={() => setIsNavOpen(false)}
+            aria-label="Close navigation menu"
+          >
+            ×
+          </button>
+        )}
       </div>
       
       <div className="nav-items">
@@ -59,7 +75,7 @@ export default function Navigation({ activeSection, setActiveSection }) {
             <button
               key={item.id}
               className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
-              onClick={() => setActiveSection(item.id)}
+              onClick={() => handleNavItemClick(item.id)}
             >
               <IconComponent className="nav-icon" />
               <div className="nav-content">

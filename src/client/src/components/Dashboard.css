@@ -592,36 +592,108 @@
   }
 }
 
+/* Extra responsive improvements */
 @media (max-width: 480px) {
+  .dashboard-avancado {
+    padding: 10px;
+  }
+  
+  .dashboard-header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 16px;
+    border-radius: 12px;
+  }
+  
+  .header-title {
+    text-align: center;
+    gap: 12px;
+  }
+  
+  .header-title h1 {
+    font-size: 20px;
+  }
+  
+  .header-controls {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .control-btn {
+    padding: 10px 16px;
+    font-size: 13px;
+    min-width: 120px;
+  }
+  
+  .metrics-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .metric-card {
+    padding: 16px;
+    border-radius: 12px;
+    text-align: center;
+  }
+  
+  .metric-value {
+    font-size: 20px;
+  }
+  
+  .metric-label {
+    font-size: 13px;
+  }
+  
+  .alertas-section {
+    padding: 16px;
+    border-radius: 12px;
+  }
+  
+  .alertas-section h3 {
+    font-size: 16px;
+    text-align: center;
+  }
+  
+  .alerta {
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 360px) {
   .dashboard-avancado {
     padding: 8px;
   }
   
   .dashboard-header {
     padding: 12px;
-    border-radius: 10px;
   }
   
   .header-title h1 {
     font-size: 18px;
   }
   
-  .metrics-grid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 10px;
+  .control-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+    min-width: 100px;
   }
   
   .metric-card {
     padding: 12px;
-    border-radius: 10px;
   }
   
-  .control-btn {
-    padding: 6px 10px;
+  .metric-value {
+    font-size: 18px;
+  }
+  
+  .metric-label {
     font-size: 12px;
   }
   
-  .header-controls {
-    gap: 8px;
+  .alertas-section {
+    padding: 12px;
   }
 }

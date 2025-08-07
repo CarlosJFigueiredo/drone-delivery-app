@@ -663,3 +663,107 @@
     flex-direction: column;
   }
 }
+
+/* Additional Mobile Responsive Improvements */
+@media (max-width: 480px) {
+  .pedido-manager {
+    padding: 10px;
+  }
+  
+  .manager-header {
+    padding: 16px;
+    border-radius: 12px;
+  }
+  
+  .manager-header h1 {
+    font-size: 18px;
+  }
+  
+  .tab-buttons {
+    padding: 3px;
+    border-radius: 8px;
+    flex-wrap: wrap;
+  }
+  
+  .tab-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+    min-width: 90px;
+  }
+  
+  .btn-primary {
+    padding: 10px 20px;
+    font-size: 14px;
+    width: 100%;
+  }
+  
+  .manager-filters {
+    padding: 12px;
+    border-radius: 10px;
+  }
+  
+  .pedidos-grid,
+  .drones-grid {
+    gap: 12px;
+  }
+  
+  .pedido-card,
+  .drone-card {
+    padding: 12px;
+    border-radius: 10px;
+  }
+  
+  .card-header {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+  
+  .card-header h3 {
+    font-size: 16px;
+  }
+  
+  .status-badge {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+  
+  .card-info p {
+    font-size: 13px;
+  }
+  
+  .card-actions {
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  
+  .card-actions button {
+    padding: 6px 12px;
+    font-size: 12px;
+    min-width: 80px;
+  }
+  
+  .form-group label {
+    font-size: 13px;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 8px;
+    font-size: 14px;
+  }
+  
+  .modal-content {
+    margin: 5px;
+    padding: 16px;
+    border-radius: 10px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .modal-header h2 {
+    font-size: 18px;
+  }
+}

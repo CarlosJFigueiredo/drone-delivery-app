@@ -140,44 +140,97 @@
 /* Mobile responsiveness */
 @media (max-width: 768px) {
   .navigation {
-    width: 100%;
-    height: auto;
-    position: relative;
-    flex-direction: row;
+    width: 280px;
+    height: 100vh;
+    position: fixed;
+    left: -280px;
+    top: 0;
+    transition: left 0.3s ease;
+    z-index: 1002;
+  }
+  
+  .navigation.nav-open {
+    left: 0;
   }
   
   .nav-header {
-    display: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .nav-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .nav-close:hover {
+    background: rgba(255, 255, 255, 0.1);
   }
   
   .nav-items {
-    display: flex;
-    flex-direction: row;
-    overflow-x: auto;
-    padding: 0;
+    flex: 1;
+    padding: 10px 0;
+    overflow-y: auto;
   }
   
   .nav-item {
-    min-width: 120px;
-    flex-direction: column;
-    padding: 12px 8px;
-    gap: 8px;
-    text-align: center;
+    padding: 16px 20px;
+    margin-bottom: 2px;
   }
   
   .nav-item:hover {
-    padding-left: 8px;
-  }
-  
-  .nav-content {
-    align-items: center;
+    padding-left: 24px;
   }
   
   .nav-label {
-    font-size: 12px;
+    font-size: 14px;
   }
   
   .nav-description {
-    display: none;
+    font-size: 11px;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .navigation {
+    width: 260px;
+    left: -260px;
+  }
+  
+  .nav-header {
+    padding: 16px;
+  }
+  
+  .logo-text {
+    font-size: 18px;
+  }
+  
+  .logo-icon {
+    font-size: 24px;
+  }
+  
+  .nav-item {
+    padding: 14px 16px;
+  }
+  
+  .nav-item:hover {
+    padding-left: 20px;
+  }
+  
+  .nav-label {
+    font-size: 13px;
+  }
+  
+  .nav-description {
+    font-size: 10px;
   }
 }

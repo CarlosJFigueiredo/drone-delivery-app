@@ -1,3 +1,13 @@
+/* Reset and base styles */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -5,9 +15,114 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+  overflow-x: hidden;
 }
 
+/* Prevent zoom on input focus for iOS */
+input, select, textarea, button {
+  font-size: 16px;
+}
+
+/* Ensure images are responsive */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Responsive typography */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  line-height: 1.2;
+}
+
+p {
+  margin: 0 0 1rem 0;
+}
+
+/* Link styles */
+a {
+  color: #3498db;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #2980b9;
+}
+
+/* Button reset */
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Focus styles for accessibility */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid #3498db;
+  outline-offset: 2px;
+}
+
+/* Code styling */
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Responsive font sizes */
+@media (max-width: 768px) {
+  html {
+    font-size: 15px;
+  }
+  
+  h1 { font-size: 1.8rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.3rem; }
+  h4 { font-size: 1.1rem; }
+  h5 { font-size: 1rem; }
+  h6 { font-size: 0.9rem; }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 14px;
+  }
+  
+  h1 { font-size: 1.6rem; }
+  h2 { font-size: 1.4rem; }
+  h3 { font-size: 1.2rem; }
+  h4 { font-size: 1rem; }
+  h5 { font-size: 0.9rem; }
+  h6 { font-size: 0.8rem; }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* Optimizations for retina displays */
+  body {
+    -webkit-font-smoothing: subpixel-antialiased;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  /* Can be extended for dark mode support */
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  html {
+    scroll-behavior: auto;
+  }
 }
