@@ -1,0 +1,29 @@
+# Diretórios do Maven
+target/
+.mvn/
+!mvnw
+!mvnw.cmd
+
+# Configurações do sistema
+.DS_Store
+.idea/
+*.iml
+*.log
+
+# Git
+.git/
+.gitignore
+
+# Sistema operacional
+Thumbs.db
+ehthumbs.db
+
+# Outros arquivos temporários
+*.swp
+*.bak
+*.tmp
+*.orig
+
+# Arquivos de build específicos
+docker-compose.yml
+Dockerfile
