@@ -16,9 +16,9 @@ import {
   FaCog
 } from 'react-icons/fa';
 import api from '../services/api';
-import './DashboardAvancado.css';
+import './Dashboard.css';
 
-export default function DashboardAvancado() {
+export default function Dashboard() {
   const [estatisticas, setEstatisticas] = useState({});
   const [drones, setDrones] = useState([]);
   const [entregas, setEntregas] = useState([]);

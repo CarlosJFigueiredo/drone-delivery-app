@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
+import './MapaEntregas.css';
 
 export default function MapaEntregas() {
   const [drones, setDrones] = useState([]);
@@ -7,6 +8,10 @@ export default function MapaEntregas() {
   const [zonasExclusao, setZonasExclusao] = useState([]);
   const [pedidosPendentes, setPedidosPendentes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [lastMousePos, setLastMousePos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     carregarDados();
@@ -31,6 +36,48 @@ export default function MapaEntregas() {
       console.error('Erro ao carregar dados do mapa:', error);
     }
     setLoading(false);
+  };
+
+  const handleZoomIn = () => {
+    setZoomLevel(prev => Math.min(prev * 1.5, 5));
+  };
+
+  const handleZoomOut = () => {
+    setZoomLevel(prev => Math.max(prev / 1.5, 0.3));
+  };
+
+  const handleZoomReset = () => {
+    setZoomLevel(1);
+    setPanOffset({ x: 0, y: 0 });
+  };
+
+  const handleWheel = (e) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? 0.9 : 1.1;
+    setZoomLevel(prev => Math.min(Math.max(prev * delta, 0.3), 5));
+  };
+
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setLastMousePos({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    
+    const deltaX = e.clientX - lastMousePos.x;
+    const deltaY = e.clientY - lastMousePos.y;
+    
+    setPanOffset(prev => ({
+      x: prev.x + deltaX / zoomLevel,
+      y: prev.y + deltaY / zoomLevel
+    }));
+    
+    setLastMousePos({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
   };
 
   const calcularEscala = () => {
@@ -69,9 +116,16 @@ export default function MapaEntregas() {
     const rangeX = escala.maxX - escala.minX;
     const rangeY = escala.maxY - escala.minY;
     
+    // Aplicar zoom e pan
+    const baseX = ((x - escala.minX) / rangeX) * width;
+    const baseY = height - ((y - escala.minY) / rangeY) * height;
+    
+    const centerX = width / 2;
+    const centerY = height / 2;
+    
     return {
-      x: ((x - escala.minX) / rangeX) * width,
-      y: height - ((y - escala.minY) / rangeY) * height
+      x: centerX + (baseX - centerX) * zoomLevel + panOffset.x,
+      y: centerY + (baseY - centerY) * zoomLevel + panOffset.y
     };
   };
 
@@ -91,7 +145,16 @@ export default function MapaEntregas() {
         overflow: 'hidden',
         boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
       }}>
-        <svg width={width} height={height} style={{ background: '#ecf0f1' }}>
+        <svg 
+          width={width} 
+          height={height} 
+          style={{ background: '#ecf0f1', cursor: isDragging ? 'grabbing' : 'grab' }}
+          onWheel={handleWheel}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+        >
           <defs>
             <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
               <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#d5dbdb" strokeWidth="1"/>
@@ -167,6 +230,7 @@ export default function MapaEntregas() {
             );
           })}
 
+          {/* Pedidos Pendentes */}
           {pedidosPendentes.map((pedido, index) => {
             const pos = coordenadaParaPixel(pedido.x, pedido.y, escala, width, height);
             let corPrioridade = '#3498db';
@@ -202,6 +266,101 @@ export default function MapaEntregas() {
           })}
 
         </svg>
+
+        <div style={{
+          position: 'absolute',
+          top: '10px',
+          left: '10px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '5px',
+          background: 'rgba(255, 255, 255, 0.9)',
+          borderRadius: '8px',
+          padding: '10px',
+          boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+        }}>
+          <button
+            onClick={handleZoomIn}
+            style={{
+              width: '40px',
+              height: '40px',
+              border: 'none',
+              borderRadius: '6px',
+              background: '#3498db',
+              color: 'white',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => e.target.style.background = '#2980b9'}
+            onMouseLeave={(e) => e.target.style.background = '#3498db'}
+            title="Aumentar Zoom"
+          >
+            +
+          </button>
+          
+          <button
+            onClick={handleZoomOut}
+            style={{
+              width: '40px',
+              height: '40px',
+              border: 'none',
+              borderRadius: '6px',
+              background: '#3498db',
+              color: 'white',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => e.target.style.background = '#2980b9'}
+            onMouseLeave={(e) => e.target.style.background = '#3498db'}
+            title="Diminuir Zoom"
+          >
+            −
+          </button>
+          
+          <button
+            onClick={handleZoomReset}
+            style={{
+              width: '40px',
+              height: '40px',
+              border: 'none',
+              borderRadius: '6px',
+              background: '#95a5a6',
+              color: 'white',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => e.target.style.background = '#7f8c8d'}
+            onMouseLeave={(e) => e.target.style.background = '#95a5a6'}
+            title="Resetar Zoom"
+          >
+            ⌂
+          </button>
+          
+          <div style={{
+            fontSize: '10px',
+            textAlign: 'center',
+            color: '#7f8c8d',
+            marginTop: '5px',
+            fontWeight: 'bold'
+          }}>
+            {Math.round(zoomLevel * 100)}%
+          </div>
+        </div>
 
         <div style={{
           position: 'absolute',
@@ -262,7 +421,10 @@ export default function MapaEntregas() {
       <div style={{ textAlign: 'center', marginBottom: '30px' }}>
         <h1>🗺️ Mapa de Entregas em Tempo Real</h1>
         <p style={{ color: '#7f8c8d', marginTop: '10px' }}>
-          Visualização simples do sistema de entregas por drone
+          Visualização interativa do sistema de entregas por drone
+        </p>
+        <p style={{ color: '#95a5a6', fontSize: '12px', marginTop: '5px' }}>
+          💡 Use os botões de zoom ou role o mouse para dar zoom • Arraste para mover o mapa
         </p>
       </div>
       
@@ -277,7 +439,9 @@ export default function MapaEntregas() {
         color: '#7f8c8d'
       }}>
         <small>
-          🔄 Mapa atualizado automaticamente a cada 3 segundos
+          🔄 Mapa atualizado automaticamente a cada 3 segundos<br/>
+          🔍 Zoom atual: <strong>{Math.round(zoomLevel * 100)}%</strong> • 
+          🖱️ Arraste para mover • ⚡ Scroll para zoom
         </small>
       </div>
     </div>
