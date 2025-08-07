@@ -1,4 +1,4 @@
-# 🚁 Simulador de Encomendas em Drone
+# Simulador de Encomendas em Drone
 
 **Desafio Técnico DTI Digital** - Sistema completo de simulação de entregas por drone com otimização inteligente e gerenciamento avançado de recursos.
 
