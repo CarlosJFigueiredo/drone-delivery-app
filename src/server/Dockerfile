@@ -6,7 +6,6 @@ WORKDIR /app
 
 # Copiar arquivos do projeto
 COPY pom.xml .
-COPY .mvn .mvn
 COPY src ./src
 
 # Baixar dependências e compilar a aplicação (sem testes)
