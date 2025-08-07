@@ -304,16 +304,54 @@ public class DroneService {
     public Map<String, Object> getEstatisticas() {
         Map<String, Object> stats = new HashMap<>();
         
+        // Estatísticas básicas
         stats.put("totalEntregas", entregasRealizadas.size());
         stats.put("totalDrones", drones.size());
         stats.put("pedidosNaFila", filaDePedidos.size());
+        stats.put("zonasExclusao", zonasExclusao.size());
         
+        // Estatísticas de bateria
+        if (!drones.isEmpty()) {
+            double bateriaMedia = drones.stream()
+                    .mapToDouble(Drone::getBateriaAtual)
+                    .average()
+                    .orElse(0);
+            stats.put("bateriaMedia", Math.round(bateriaMedia * 10.0) / 10.0);
+            
+            // Drones ativos (não em recarga ou idle)
+            long dronesAtivos = drones.stream()
+                    .filter(d -> d.getEstado() == EstadoDrone.EM_VOO || 
+                               d.getEstado() == EstadoDrone.ENTREGANDO ||
+                               d.getEstado() == EstadoDrone.CARREGANDO)
+                    .count();
+            stats.put("dronesAtivos", dronesAtivos);
+            
+            // Status da frota
+            Map<String, Long> statusFrota = drones.stream()
+                    .collect(java.util.stream.Collectors.groupingBy(
+                            d -> d.getEstado().toString(),
+                            java.util.stream.Collectors.counting()));
+            stats.put("statusFrota", statusFrota);
+        } else {
+            stats.put("bateriaMedia", 0);
+            stats.put("dronesAtivos", 0);
+            stats.put("statusFrota", new HashMap<>());
+        }
+        
+        // Estatísticas de entregas
         if (!entregasRealizadas.isEmpty()) {
+            // Tempo médio de entrega
             double tempoMedio = entregasRealizadas.stream()
                     .mapToDouble(Entrega::getTempoTotalMinutos)
                     .average()
                     .orElse(0);
             stats.put("tempoMedioEntrega", Math.round(tempoMedio * 100.0) / 100.0);
+            
+            // Distância total percorrida
+            double distanciaTotal = entregasRealizadas.stream()
+                    .mapToDouble(Entrega::getDistanciaPercorrida)
+                    .sum();
+            stats.put("distanciaTotal", Math.round(distanciaTotal * 100.0) / 100.0);
             
             // Drone mais eficiente (que fez mais entregas)
             Map<String, Long> entregasPorDrone = entregasRealizadas.stream()
@@ -327,10 +365,44 @@ public class DroneService {
                     .orElse("Nenhum");
             
             stats.put("droneMaisEficiente", droneMaisEficiente);
+            
+            // Eficiência geral (entregas por hora)
+            long tempoTotalMinutos = entregasRealizadas.stream()
+                    .mapToLong(e -> (long) e.getTempoTotalMinutos())
+                    .sum();
+            double eficienciaGeral = tempoTotalMinutos > 0 ? 
+                    (entregasRealizadas.size() * 60.0) / tempoTotalMinutos : 0;
+            stats.put("eficienciaGeral", Math.round(eficienciaGeral * 100.0) / 100.0);
+            
+            // Consumo médio de bateria por entrega
+            double consumoMedio = entregasRealizadas.stream()
+                    .mapToDouble(Entrega::getBateriaConsumida)
+                    .average()
+                    .orElse(0);
+            stats.put("consumoMedioBateria", Math.round(consumoMedio * 100.0) / 100.0);
+            
         } else {
             stats.put("tempoMedioEntrega", 0);
+            stats.put("distanciaTotal", 0);
             stats.put("droneMaisEficiente", "Nenhum");
+            stats.put("eficienciaGeral", 0);
+            stats.put("consumoMedioBateria", 0);
         }
+        
+        // Estatísticas de prioridade
+        if (!filaDePedidos.isEmpty()) {
+            Map<String, Long> pedidosPorPrioridade = filaDePedidos.stream()
+                    .collect(java.util.stream.Collectors.groupingBy(
+                            p -> p.getPrioridade().toString(),
+                            java.util.stream.Collectors.counting()));
+            stats.put("pedidosPorPrioridade", pedidosPorPrioridade);
+        } else {
+            stats.put("pedidosPorPrioridade", new HashMap<>());
+        }
+        
+        // Estatísticas de tempo real
+        stats.put("timestamp", System.currentTimeMillis());
+        stats.put("sistemaAtivo", true);
         
         return stats;
     }
