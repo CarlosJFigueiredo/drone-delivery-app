@@ -62,4 +62,42 @@ public class PedidoController {
     public ResponseEntity<Map<String, Object>> obterEstatisticas() {
         return ResponseEntity.ok(droneService.getEstatisticas());
     }
+    
+    @PutMapping("/{pedidoId}")
+    public ResponseEntity<String> editarPedido(@PathVariable String pedidoId, @RequestBody @Valid PedidoDTO pedidoDTO) {
+        boolean sucesso = droneService.editarPedido(
+            pedidoId,
+            pedidoDTO.getCliente(),
+            pedidoDTO.getX(),
+            pedidoDTO.getY(),
+            pedidoDTO.getPeso(),
+            pedidoDTO.getPrioridade().name()
+        );
+        
+        if (sucesso) {
+            return ResponseEntity.ok("Pedido " + pedidoId + " editado com sucesso!");
+        } else {
+            return ResponseEntity.badRequest().body("Pedido " + pedidoId + " não encontrado na fila.");
+        }
+    }
+    
+    @DeleteMapping("/{pedidoId}")
+    public ResponseEntity<String> removerPedido(@PathVariable String pedidoId) {
+        boolean sucesso = droneService.removerPedido(pedidoId);
+        if (sucesso) {
+            return ResponseEntity.ok("Pedido " + pedidoId + " removido com sucesso!");
+        } else {
+            return ResponseEntity.badRequest().body("Pedido " + pedidoId + " não encontrado na fila.");
+        }
+    }
+    
+    @GetMapping("/{pedidoId}")
+    public ResponseEntity<Pedido> buscarPedido(@PathVariable String pedidoId) {
+        Pedido pedido = droneService.buscarPedido(pedidoId);
+        if (pedido != null) {
+            return ResponseEntity.ok(pedido);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

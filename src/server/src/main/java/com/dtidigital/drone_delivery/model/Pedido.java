@@ -33,20 +33,40 @@ public class Pedido {
     public String getCliente() {
         return cliente;
     }
+    
+    public void setCliente(String cliente) {
+        this.cliente = cliente;
+    }
 
     public int getX() {
         return x;
+    }
+    
+    public void setX(int x) {
+        this.x = x;
     }
 
     public int getY() {
         return y;
     }
+    
+    public void setY(int y) {
+        this.y = y;
+    }
 
     public double getPeso() {
         return peso;
     }
+    
+    public void setPeso(double peso) {
+        this.peso = peso;
+    }
 
     public Prioridade getPrioridade() {
         return prioridade;
+    }
+    
+    public void setPrioridade(Prioridade prioridade) {
+        this.prioridade = prioridade;
     }
 }

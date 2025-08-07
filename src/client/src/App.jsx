@@ -132,7 +132,7 @@ export default function App() {
   const consultarStatus = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.get(`/api/pedidos/status/${statusPedidoId}`);
+      const response = await api.get(`/pedidos/status/${statusPedidoId}`);
       setStatusResult(`Status: ${response.data.status}`);
     } catch (error) {
       setStatusResult('Erro: ' + (error.response?.data || error.message));

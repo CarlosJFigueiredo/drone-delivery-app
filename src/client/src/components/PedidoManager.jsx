@@ -124,7 +124,7 @@ export default function PedidoManager() {
       let response;
       if (editingPedido) {
         console.log(`✏️ Atualizando pedido ID: ${editingPedido.id}`);
-        response = await api.put(`/api/pedidos/${editingPedido.id}`, pedidoData);
+        response = await api.put(`/pedidos/${editingPedido.id}`, pedidoData);
         console.log('✅ Pedido atualizado:', response.data);
       } else {
         console.log('➕ Criando novo pedido...');
@@ -189,7 +189,7 @@ export default function PedidoManager() {
       let response;
       if (editingDrone) {
         console.log(`✏️ Atualizando drone ID: ${editingDrone.id}`);
-        response = await api.put(`/api/drones/${editingDrone.id}`, droneData);
+        response = await api.put(`/drones/${editingDrone.id}`, droneData);
         console.log('✅ Drone atualizado:', response.data);
       } else {
         console.log('➕ Criando novo drone...');
@@ -232,8 +232,8 @@ export default function PedidoManager() {
     setEditingDrone(drone);
     setDroneFormData({
       id: drone.id,
-      capacidade: drone.capacidade,
-      autonomia: drone.autonomia
+      capacidade: drone.capacidadeMaxima,
+      autonomia: drone.autonomiaMaxima
     });
     setShowForm(true);
   };
@@ -243,7 +243,7 @@ export default function PedidoManager() {
       setLoading(true);
       try {
         console.log(`🗑️ Excluindo pedido ID: ${id}`);
-        await api.delete(`/api/pedidos/${id}`);
+        await api.delete(`/pedidos/${id}`);
         console.log('✅ Pedido excluído com sucesso');
         await carregarPedidos();
         alert('Pedido excluído com sucesso!');
@@ -262,7 +262,7 @@ export default function PedidoManager() {
       setLoading(true);
       try {
         console.log(`🗑️ Excluindo drone ID: ${id}`);
-        await api.delete(`/api/drones/${id}`);
+        await api.delete(`/drones/${id}`);
         console.log('✅ Drone excluído com sucesso');
         await carregarDrones();
         alert('Drone excluído com sucesso!');

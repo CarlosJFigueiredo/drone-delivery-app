@@ -201,6 +201,31 @@ public class DroneService {
         zonasExclusao.add(new ZonaExclusao(x1, y1, x2, y2, nome, motivo));
     }
 
+    public boolean editarZonaExclusao(String zonaId, int x1, int y1, int x2, int y2, String nome, String motivo) {
+        for (ZonaExclusao zona : zonasExclusao) {
+            if (zona.getId().equals(zonaId)) {
+                zona.setNome(nome);
+                zona.setMotivo(motivo);
+                zona.setCoordenadas(x1, y1, x2, y2);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean removerZonaExclusao(String zonaId) {
+        return zonasExclusao.removeIf(zona -> zona.getId().equals(zonaId));
+    }
+
+    public ZonaExclusao buscarZonaExclusao(String zonaId) {
+        for (ZonaExclusao zona : zonasExclusao) {
+            if (zona.getId().equals(zonaId)) {
+                return zona;
+            }
+        }
+        return null;
+    }
+
     public Map<String, Object> getEstatisticas() {
         Map<String, Object> stats = new HashMap<>();
         
@@ -426,5 +451,107 @@ public class DroneService {
             }
         }
         return false;
+    }
+    
+    /**
+     * Edita um drone existente
+     */
+    public boolean editarDrone(String id, double capacidade, double autonomia) {
+        for (Drone drone : drones) {
+            if (drone.getId().equals(id)) {
+                // Só permitir edição se drone estiver IDLE
+                if (drone.getEstado() != EstadoDrone.IDLE) {
+                    return false;
+                }
+                
+                // Atualizar propriedades
+                drone.setCapacidadeMaxima(capacidade);
+                drone.setAutonomiaMaxima(autonomia);
+                
+                // Se a nova autonomia for menor que a bateria atual, ajustar
+                if (drone.getBateriaAtual() > autonomia) {
+                    drone.setBateriaAtual(autonomia);
+                }
+                
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Remove um drone do sistema
+     */
+    public boolean removerDrone(String id) {
+        for (int i = 0; i < drones.size(); i++) {
+            Drone drone = drones.get(i);
+            if (drone.getId().equals(id)) {
+                // Só permitir remoção se drone estiver IDLE
+                if (drone.getEstado() != EstadoDrone.IDLE) {
+                    return false;
+                }
+                
+                drones.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Edita um pedido na fila
+     */
+    public boolean editarPedido(String id, String cliente, int x, int y, double peso, String prioridade) {
+        for (Pedido pedido : filaDePedidos) {
+            if (pedido.getId().equals(id)) {
+                pedido.setCliente(cliente);
+                pedido.setX(x);
+                pedido.setY(y);
+                pedido.setPeso(peso);
+                pedido.setPrioridade(com.dtidigital.drone_delivery.enums.Prioridade.valueOf(prioridade));
+                
+                // Reordenar fila após edição
+                ordenarFila();
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Remove um pedido da fila
+     */
+    public boolean removerPedido(String id) {
+        for (int i = 0; i < filaDePedidos.size(); i++) {
+            if (filaDePedidos.get(i).getId().equals(id)) {
+                filaDePedidos.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Busca um pedido por ID
+     */
+    public Pedido buscarPedido(String id) {
+        for (Pedido pedido : filaDePedidos) {
+            if (pedido.getId().equals(id)) {
+                return pedido;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Busca um drone por ID
+     */
+    public Drone buscarDrone(String id) {
+        for (Drone drone : drones) {
+            if (drone.getId().equals(id)) {
+                return drone;
+            }
+        }
+        return null;
     }
 }

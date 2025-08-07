@@ -1,6 +1,9 @@
 package com.dtidigital.drone_delivery.model;
 
+import java.util.UUID;
+
 public class ZonaExclusao {
+    private String id;
     private int x1;
     private int y1;
     private int x2;
@@ -9,6 +12,7 @@ public class ZonaExclusao {
     private String motivo;
 
     public ZonaExclusao(int x1, int y1, int x2, int y2, String nome, String motivo) {
+        this.id = UUID.randomUUID().toString();
         this.x1 = Math.min(x1, x2);
         this.y1 = Math.min(y1, y2);
         this.x2 = Math.max(x1, x2);
@@ -29,10 +33,21 @@ public class ZonaExclusao {
     }
 
     // Getters
+    public String getId() { return id; }
     public int getX1() { return x1; }
     public int getY1() { return y1; }
     public int getX2() { return x2; }
     public int getY2() { return y2; }
     public String getNome() { return nome; }
     public String getMotivo() { return motivo; }
+    
+    // Setters
+    public void setNome(String nome) { this.nome = nome; }
+    public void setMotivo(String motivo) { this.motivo = motivo; }
+    public void setCoordenadas(int x1, int y1, int x2, int y2) {
+        this.x1 = Math.min(x1, x2);
+        this.y1 = Math.min(y1, y2);
+        this.x2 = Math.max(x1, x2);
+        this.y2 = Math.max(y1, y2);
+    }
 }

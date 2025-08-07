@@ -60,22 +60,31 @@ export default function ZonasExclusao() {
         return;
       }
       
-      await api.post('/drones/zonas-exclusao', {
+      const zonaData = {
         x1, y1, x2, y2,
         nome: novaZona.nome.trim(),
         motivo: novaZona.motivo.trim()
-      });
+      };
       
-      alert('Zona de exclusão adicionada com sucesso!');
+      if (editingZona) {
+        console.log(`✏️ Editando zona ID: ${editingZona.id}`);
+        await api.put(`/drones/zonas-exclusao/${editingZona.id}`, zonaData);
+        alert('Zona de exclusão editada com sucesso!');
+      } else {
+        console.log('➕ Criando nova zona...');
+        await api.post('/drones/zonas-exclusao', zonaData);
+        alert('Zona de exclusão adicionada com sucesso!');
+      }
+      
       resetForm();
       fetchZonas();
     } catch (error) {
-      console.error('❌ Erro ao adicionar zona:', error);
+      console.error('❌ Erro ao salvar zona:', error);
       const errorMessage = error.response?.data?.message || 
                           error.response?.data?.error || 
                           error.message || 
                           'Erro desconhecido';
-      alert('Erro ao adicionar zona: ' + errorMessage);
+      alert(`Erro ao ${editingZona ? 'editar' : 'adicionar'} zona: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -104,18 +113,19 @@ export default function ZonasExclusao() {
     if (window.confirm(`Tem certeza que deseja excluir a zona "${zona.nome}"?`)) {
       setLoading(true);
       try {
-        // Como não temos endpoint de delete, vamos simular uma exclusão local
-        // Em um sistema real, seria: await api.delete(`/drones/zonas-exclusao/${zona.id}`);
-        
-        // Por enquanto, vamos apenas mostrar uma mensagem
-        alert('Funcionalidade de exclusão não implementada no backend. A zona permanecerá cadastrada.');
-        
-        // Se tivéssemos o endpoint, faríamos:
-        // await fetchZonas();
-        // alert('Zona excluída com sucesso!');
+        console.log(`🗑️ Excluindo zona ID: ${zona.id}`);
+        await api.delete(`/drones/zonas-exclusao/${zona.id}`);
+        console.log('✅ Zona excluída com sucesso');
+        await fetchZonas();
+        alert('Zona excluída com sucesso!');
       } catch (error) {
         console.error('❌ Erro ao excluir zona:', error);
-        alert(`Erro ao excluir zona: ${error.response?.data?.message || error.message}`);
+        console.error('📄 Detalhes do erro:', error.response?.data);
+        const errorMessage = error.response?.data?.message || 
+                            error.response?.data?.error || 
+                            error.message || 
+                            'Erro desconhecido';
+        alert(`Erro ao excluir zona: ${errorMessage}`);
       } finally {
         setLoading(false);
       }
@@ -173,7 +183,7 @@ export default function ZonasExclusao() {
       ) : (
         <div className="zonas-grid">
           {zonas.map((zona) => (
-            <div key={`${zona.nome}-${zona.x1}-${zona.y1}`} className="zona-card">
+            <div key={zona.id || `${zona.nome}-${zona.x1}-${zona.y1}`} className="zona-card">
               <div className="zona-header">
                 <h3 className="zona-nome">{zona.nome}</h3>
                 <div className="zona-actions">

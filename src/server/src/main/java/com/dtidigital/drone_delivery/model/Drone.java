@@ -34,13 +34,25 @@ public class Drone {
     public double getCapacidadeMaxima() {
         return capacidadeMaxima;
     }
+    
+    public void setCapacidadeMaxima(double capacidadeMaxima) {
+        this.capacidadeMaxima = capacidadeMaxima;
+    }
 
     public double getAutonomiaMaxima() {
         return autonomiaMaxima;
     }
+    
+    public void setAutonomiaMaxima(double autonomiaMaxima) {
+        this.autonomiaMaxima = autonomiaMaxima;
+    }
 
     public double getBateriaAtual() {
         return bateriaAtual;
+    }
+    
+    public void setBateriaAtual(double bateriaAtual) {
+        this.bateriaAtual = bateriaAtual;
     }
 
     public void consumirBateria(double distancia) {
